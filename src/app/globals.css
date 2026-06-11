@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-space-grotesk);
+}
+
+/*
+  Ocean descent — bright sunlit shallows at top,
+  descending through navy → deep navy → abyss black.
+*/
+html {
+  background: linear-gradient(
+    to bottom,
+    #0096c7 0%,
+    #0077b6 12%,
+    #023e8a 38%,
+    #03045e 60%,
+    #010118 78%,
+    #000000 93%
+  );
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  min-height: 100%;
+  /* Crisp subpixel rendering */
+  text-rendering: optimizeLegibility;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: transparent;
+  color: #e2e8f0;
+  font-family: var(--font-space-grotesk), system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* All images: pixel-perfect at their native resolution */
+img, canvas {
+  image-rendering: auto;
+}
+
+::selection {
+  background: #0077b6;
+  color: #fff;
+}
+
+/* ── Hero page-load stagger ── */
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-hero {
+  opacity: 0;
+  animation: heroFadeUp 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.animate-hero-1 { animation-delay: 0.05s; }
+.animate-hero-2 { animation-delay: 0.22s; }
+.animate-hero-3 { animation-delay: 0.40s; }
+.animate-hero-4 { animation-delay: 0.56s; }
+.animate-hero-5 { animation-delay: 0.72s; }
+.animate-hero-6 { animation-delay: 0.92s; }
+
+/* ── Scroll-triggered fade-in handled by FadeIn component ── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Button glow pulse ── */
+@keyframes btnGlow {
+  0%, 100% {
+    box-shadow: 0 0 14px rgba(0,119,182,0.20), 0 0 0 1px rgba(144,224,239,0.10);
+  }
+  50% {
+    box-shadow: 0 0 44px rgba(0,183,222,0.55), 0 0 0 1px rgba(144,224,239,0.32);
+  }
+}
+
+.btn-glow {
+  animation: btnGlow 3.5s ease-in-out infinite;
+}
+
+/* ── Map marker pulse ring ── */
+@keyframes mapPing {
+  0%   { transform: scale(1);   opacity: 0.55; }
+  80%  { transform: scale(3.2); opacity: 0; }
+  100% { transform: scale(3.2); opacity: 0; }
+}
+
+.map-ping {
+  transform-box:    fill-box;
+  transform-origin: center;
+  animation:        mapPing 2.6s ease-out infinite;
+}
+
+/* ── Draper badge glow ── */
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 18px rgba(0,119,182,0.25), 0 0 0 1px rgba(144,224,239,0.18); }
+  50%       { box-shadow: 0 0 32px rgba(0,119,182,0.45), 0 0 0 1px rgba(144,224,239,0.35); }
+}
+
+.draper-badge {
+  animation: glowPulse 3s ease-in-out infinite;
+}
