@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 const team = [
   { name: "Andrew Jimenez", role: "Co-Founder & CEO" },
-  { name: "Gabriel Hernandez", role: "Co-Founder & CTO" },
+  { name: "Gabriel Jimenez", role: "Co-Founder & CTO" },
   { name: "Brandon Lichter", role: "Lead Software Engineer" },
 ];
 

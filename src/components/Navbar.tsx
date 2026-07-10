@@ -5,9 +5,10 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 const links = [
-  { href: "/",        label: "Home"  },
-  { href: "/about",   label: "About" },
-  { href: "/blog",    label: "Blog"  },
+  { href: "/",           label: "Home"       },
+  { href: "/technology", label: "Technology" },
+  { href: "/about",      label: "About"      },
+  { href: "/blog",       label: "Blog"       },
 ];
 
 export default function Navbar() {
@@ -74,30 +75,23 @@ export default function Navbar() {
         <div className="flex h-16 items-center justify-between">
 
           {/* ── Logo ── */}
-          <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
+          <Link href="/" className="flex items-center shrink-0 group">
             {/*
-              Plain <img> (not next/image) so no wrapper span interferes
-              with mix-blend-mode compositing.
-              mix-blend-mode: screen → dark-navy logo background (~#03045e)
-              blends away against any surface; the silver metallic mark
-              remains visible as a bright cutout.
+              Transparent cutout PNG (mark + wordmark) — sits directly on
+              any background, no blend-mode compositing needed.
             */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/ND_Logo.png"
-              alt=""
-              aria-hidden="true"
+              src="/nd-logo-cutout.png"
+              alt="Noble Deep"
+              className="group-hover:opacity-100 opacity-90 transition-opacity"
               style={{
-                height:       "44px",
-                width:        "auto",
-                display:      "block",
-                mixBlendMode: "screen",
-                flexShrink:   0,
+                height:     "44px",
+                width:      "auto",
+                display:    "block",
+                flexShrink: 0,
               }}
             />
-            <span className="text-sm font-semibold tracking-wide text-white/90 group-hover:text-white transition-colors select-none">
-              Noble Deep
-            </span>
           </Link>
 
           {/* ── Desktop nav ── */}

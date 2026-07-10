@@ -8,9 +8,8 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row items-start justify-between gap-10">
           {/* Brand */}
           <div className="flex flex-col gap-4">
-            <Link href="/" className="flex items-center gap-2.5">
-              <Image src="/ND_Logo.png" alt="Noble Deep" width={28} height={28} className="h-7 w-auto" />
-              <span className="text-sm font-semibold text-white/80">Noble Deep</span>
+            <Link href="/" className="flex items-center">
+              <Image src="/nd-logo-cutout.png" alt="Noble Deep" width={745} height={467} className="h-10 w-auto" />
             </Link>
             <p className="text-xs text-[#90e0ef]/40 leading-relaxed max-w-[220px]">
               Seafloor-resident autonomous monitoring.<br />Continuous, not periodic.
@@ -28,6 +27,7 @@ export default function Footer() {
             <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#90e0ef]/30 mb-1">Site</p>
             {[
               { href: "/", label: "Home" },
+              { href: "/technology", label: "Technology" },
               { href: "/about", label: "About" },
               { href: "/blog", label: "Blog" },
               { href: "/contact", label: "Contact" },
