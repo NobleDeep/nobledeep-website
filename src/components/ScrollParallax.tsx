@@ -19,7 +19,8 @@ export default function ScrollParallax({ children, speed = 0.15, className = "" 
 
     const handleScroll = () => {
       if (el) {
-        el.style.transform = `translateY(${window.scrollY * speed}px)`;
+        /* Whole-pixel offsets — fractional translate blurs text in the layer */
+        el.style.transform = `translateY(${Math.round(window.scrollY * speed)}px)`;
       }
     };
 

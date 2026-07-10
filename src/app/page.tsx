@@ -16,21 +16,33 @@ export default function HomePage() {
             "linear-gradient(to bottom, #0096c7 0%, #0077b6 28%, rgba(2,62,138,0.3) 72%, transparent 100%)",
         }}
       >
-        {/* WebGL caustics — light refracting from the surface above */}
-        <WaterCaustics />
-
-        {/* 2-D canvas — particles + waves + scan line (above caustics) */}
-        <HeroCanvas />
-
-        {/* Depth vignette: subtle darkening toward the bottom */}
+        {/*
+          Effects layer — masked so canvases and vignette fade out before
+          the section boundary instead of ending in a hard line.
+        */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 z-[2]"
+          className="absolute inset-0"
           style={{
-            background:
-              "radial-gradient(ellipse 90% 60% at 50% 110%, rgba(0,0,0,0.45) 0%, transparent 70%)",
+            maskImage: "linear-gradient(to bottom, black 78%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 78%, transparent 100%)",
           }}
-        />
+        >
+          {/* WebGL caustics — light refracting from the surface above */}
+          <WaterCaustics />
+
+          {/* 2-D canvas — particles + waves + scan line (above caustics) */}
+          <HeroCanvas />
+
+          {/* Depth vignette: subtle darkening toward the bottom */}
+          <div
+            className="pointer-events-none absolute inset-0 z-[2]"
+            style={{
+              background:
+                "radial-gradient(ellipse 90% 60% at 50% 110%, rgba(0,0,0,0.45) 0%, transparent 70%)",
+            }}
+          />
+        </div>
 
         {/* Hero content */}
         <ScrollParallax speed={0.12} className="relative z-10 px-6 lg:px-10 py-24">
@@ -79,14 +91,12 @@ export default function HomePage() {
             {/* Draper badge */}
             <div className="animate-hero animate-hero-6 mt-14 flex items-center gap-5">
               <div className="h-px w-12 bg-[#90e0ef]/20" />
-              <div className="draper-badge inline-flex items-center gap-3 border border-[#90e0ef]/25 bg-[#0077b6]/10 backdrop-blur-sm px-5 py-2.5 rounded-sm">
-                <svg
-                  className="h-4 w-4 text-[#22d3ee] shrink-0"
-                  fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}
-                >
-                  <circle cx="12" cy="5" r="2" />
-                  <path strokeLinecap="round" d="M12 7v13M8 10h8M6 20c0-3.314 2.686-6 6-6s6 2.686 6 6" />
-                </svg>
+              {/*
+                Solid (non-backdrop-blurred) background — backdrop-filter
+                inside the composited parallax layer rasterized the text
+                and made it fuzzy.
+              */}
+              <div className="draper-badge inline-flex items-center border border-[#90e0ef]/25 bg-[#023e8a]/45 px-5 py-2.5 rounded-sm">
                 <div>
                   <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-white">Draper University</p>
                   <p className="text-[10px] uppercase tracking-[0.15em] text-[#90e0ef]/60">Alumni Company</p>
@@ -96,13 +106,26 @@ export default function HomePage() {
             </div>
           </div>
         </ScrollParallax>
+
+        {/* Scroll cue — anchors the tall hero, signals more below */}
+        <div aria-hidden className="absolute bottom-8 inset-x-0 z-10 flex justify-center animate-hero animate-hero-6">
+          <div className="scroll-cue flex flex-col items-center gap-2.5">
+            <span className="text-[9px] font-semibold uppercase tracking-[0.32em] text-[#90e0ef]/40 select-none">
+              Scroll
+            </span>
+            <span className="block h-9 w-px bg-gradient-to-b from-[#90e0ef]/50 to-transparent" />
+          </div>
+        </div>
       </section>
 
       {/* ─── BRIDGE — no border, flows from the hero gradient ──── */}
       <section className="px-6 lg:px-10 py-20">
         <div className="mx-auto max-w-7xl">
           <FadeIn>
-            <p className="text-[#90e0ef]/50 text-xs uppercase tracking-[0.22em] mb-5">The Problem</p>
+            <p className="flex items-center gap-4 text-[#90e0ef]/50 text-xs uppercase tracking-[0.22em] mb-5">
+              <span className="h-px w-8 bg-[#22d3ee]/40" />
+              The Problem
+            </p>
           </FadeIn>
           <FadeIn delay={80}>
             <p className="text-xl sm:text-2xl lg:text-3xl font-light text-[#90e0ef] max-w-3xl leading-relaxed">
@@ -117,7 +140,10 @@ export default function HomePage() {
       <section className="px-6 lg:px-10 pt-8 pb-28">
         <div className="mx-auto max-w-7xl">
           <FadeIn>
-            <p className="text-[#90e0ef]/50 text-xs uppercase tracking-[0.22em] mb-10">TRITON</p>
+            <p className="flex items-center gap-4 text-[#90e0ef]/50 text-xs uppercase tracking-[0.22em] mb-10">
+              <span className="h-px w-8 bg-[#22d3ee]/40" />
+              TRITON
+            </p>
           </FadeIn>
 
           {[
@@ -155,12 +181,64 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ─── SYSTEM AT A GLANCE — key figures, links to /technology ── */}
+      <section className="px-6 lg:px-10 pb-28">
+        <div className="mx-auto max-w-7xl">
+          <FadeIn>
+            <div
+              className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-[#90e0ef]/[0.1] border border-[#90e0ef]/[0.1]"
+              style={{ boxShadow: "0 4px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(144,224,239,0.05)" }}
+            >
+              {[
+                { value: "300 m",  label: "Rated depth" },
+                { value: "6 mo",   label: "Dock residency target" },
+                { value: "24/7",   label: "Resident monitoring" },
+                { value: "TRL 4",  label: "Current validation stage" },
+              ].map((stat) => (
+                <div key={stat.label} className="bg-[#021233] p-7 sm:p-9">
+                  <p className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                    {stat.value}
+                  </p>
+                  <p className="mt-2 text-[11px] uppercase tracking-[0.16em] text-[#90e0ef]/50">
+                    {stat.label}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </FadeIn>
+          <FadeIn delay={120}>
+            <div className="mt-6 flex justify-end">
+              <Link
+                href="/technology"
+                className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#22d3ee]/80 hover:text-[#22d3ee] transition-colors"
+              >
+                Explore the Technology
+                <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </Link>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
       {/* ─── WHERE TRITON WORKS ──────────────────────────────────── */}
       <WhereTritonWorks />
 
       {/* ─── CTA ─────────────────────────────────────────────────── */}
-      <section className="px-6 lg:px-10 py-32">
-        <div className="mx-auto max-w-7xl">
+      <section
+        className="relative px-6 lg:px-10 py-32 overflow-hidden"
+      >
+        {/* Layered glow — lifts the closing section off the flat abyss */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 55% 75% at 18% 45%, rgba(0,119,182,0.22) 0%, transparent 70%)",
+          }}
+        />
+        <div className="relative mx-auto max-w-7xl">
           <FadeIn>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight max-w-2xl">
               Ready to close the monitoring gap?

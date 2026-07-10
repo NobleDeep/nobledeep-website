@@ -95,6 +95,16 @@ img, canvas {
   animation:        mapPing 2.6s ease-out infinite;
 }
 
+/* ── Hero scroll cue ── */
+@keyframes scrollCue {
+  0%, 100% { transform: translateY(0);   opacity: 0.7; }
+  50%       { transform: translateY(6px); opacity: 1; }
+}
+
+.scroll-cue {
+  animation: scrollCue 2.4s ease-in-out infinite;
+}
+
 /* ── Draper badge glow ── */
 @keyframes glowPulse {
   0%, 100% { box-shadow: 0 0 18px rgba(0,119,182,0.25), 0 0 0 1px rgba(144,224,239,0.18); }

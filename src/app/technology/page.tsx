@@ -19,7 +19,7 @@ const cycleSteps = [
   {
     n: "02",
     title: "Patrol",
-    body: "The vehicle undocks and flies pre-planned inspection routes along the structure, maintaining position with sensor-fused navigation (IMU, DVL, motor encoders) and holding safe standoff via wall-proximity sensing.",
+    body: "The vehicle undocks and navigates pre-planned inspection routes along the structure, maintaining position with sensor-fused navigation (IMU, DVL, motor encoders) and holding safe standoff via wall-proximity sensing.",
   },
   {
     n: "03",
@@ -100,7 +100,7 @@ const roadmap = [
   {
     label: "Next",
     title: "Open-water testing",
-    body: "Field trials of the integrated system beyond pool scale — the gate to the commercially deployable TRITON V1.",
+    body: "Field trials of the integrated system, from pool scale to open water — the gate to the commercially deployable TRITON V1.",
   },
   {
     label: "Then",
@@ -290,8 +290,9 @@ export default function TechnologyPage() {
             <p className="text-[#90e0ef] leading-relaxed text-base lg:pt-16">
               Scripted inspection missions, vision-based defect detection,
               collision avoidance, and geofencing have been validated in
-              simulation. Pool-scale hardware trials are underway. Open-water
-              validation is the next milestone on the roadmap below.
+              simulation. Hardware validation is progressing through the
+              MVP&nbsp;V2 build now underway, with pool-scale and open-water
+              trials to follow on the roadmap below.
             </p>
           </FadeIn>
         </div>
@@ -377,11 +378,10 @@ export default function TechnologyPage() {
             >
               <div className="p-8 sm:p-10">
                 <p className="text-white font-semibold text-base leading-tight mb-3">
-                  Draper University 2026
+                  Draper University
                 </p>
                 <p className="text-[#90e0ef]/80 text-sm leading-relaxed">
-                  Selected for the 2026 accelerator cohort — 58 companies chosen
-                  from 1,700 applicants.
+                  Invited to attend the Spring 2026 Draper University cohort.
                 </p>
               </div>
               <div className="p-8 sm:p-10">
@@ -399,8 +399,17 @@ export default function TechnologyPage() {
       </section>
 
       {/* ─── ONE-PAGER + CTA ─────────────────────────────────────── */}
-      <section className="px-6 lg:px-10 py-24 border-t border-[#90e0ef]/[0.1]" style={sectionBorder}>
-        <div className="mx-auto max-w-7xl">
+      <section className="relative px-6 lg:px-10 py-24 border-t border-[#90e0ef]/[0.1] overflow-hidden" style={sectionBorder}>
+        {/* Layered glow — matches the homepage closing section */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 55% 75% at 18% 45%, rgba(0,119,182,0.22) 0%, transparent 70%)",
+          }}
+        />
+        <div className="relative mx-auto max-w-7xl">
           <FadeIn>
             <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
               Need something to forward internally?

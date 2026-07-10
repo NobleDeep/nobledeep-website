@@ -70,7 +70,8 @@ const USE_CASES: UseCase[] = [
     photo:          "/oil-rig.jpg",
     photoAlt:       "Deepwater oil rig in the ocean, Brazil pre-salt basin",
     credit:         "Photo by Grant Durr on Unsplash",
-    objectPosition: "center center",
+    /* Rig sits in the bottom third of this portrait photo */
+    objectPosition: "center 76%",
     accent:         "#0096c7",
   },
   {
