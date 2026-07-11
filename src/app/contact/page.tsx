@@ -59,12 +59,6 @@ export default function ContactPage() {
                   >
                     gabriel@nobledeepsea.com
                   </a>
-                  <a
-                    href="tel:+18053340179"
-                    className="text-sm text-[#90e0ef] hover:text-white transition-colors"
-                  >
-                    (805) 334-0179
-                  </a>
                   <p className="text-sm text-[#90e0ef]/60">Based in California</p>
                 </div>
               </div>

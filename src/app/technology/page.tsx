@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import CaptionedImage from "@/components/CaptionedImage";
 import FadeIn from "@/components/FadeIn";
 import HowTritonWorks from "@/components/HowTritonWorks";
@@ -10,35 +9,6 @@ export const metadata: Metadata = {
   description:
     "TRITON V1 system overview: validation status, operating cycle, specifications, autonomy validation, operator deliverables, and fault handling.",
 };
-
-/* ── How It Works — mechanics per step of the operating cycle ── */
-const cycleSteps = [
-  {
-    n: "01",
-    title: "Deploy",
-    body: "TRITON and its seabed docking station are installed at the asset in a single vessel visit. From that point the system operates from the dock — no surface support, no recurring vessel time.",
-  },
-  {
-    n: "02",
-    title: "Patrol",
-    body: "The vehicle undocks and navigates pre-planned inspection routes along the structure, maintaining position with sensor-fused navigation (IMU, DVL, motor encoders) and using fused ranging data for wall-proximity awareness during transit.",
-  },
-  {
-    n: "03",
-    title: "Detect",
-    body: "Onboard edge compute processes the inspection sensor stream in real time, classifying obstacles and flagging anomalies. Each detection is geotagged with the vehicle's fused position estimate.",
-  },
-  {
-    n: "04",
-    title: "Return & Recharge",
-    body: "At mission end — or on low battery or a fault condition — TRITON homes to the dock using USBL acoustic positioning, latches, recharges, and offloads mission data over the dock link.",
-  },
-  {
-    n: "05",
-    title: "Repeat",
-    body: "The vehicle remains resident at the dock between missions, targeting six months between major service intervals, and re-launches on schedule or on demand.",
-  },
-];
 
 /* ── Specifications ── */
 const specs = [
@@ -198,56 +168,6 @@ export default function TechnologyPage() {
               </p>
             </div>
           </FadeIn>
-        </div>
-      </section>
-
-      {/* ─── THE CYCLE IN DETAIL ─────────────────────────────────── */}
-      <section className="px-6 lg:px-10 py-20 border-t border-[#90e0ef]/[0.1]" style={sectionBorder}>
-        <div className="mx-auto max-w-7xl">
-          <FadeIn>
-            <SectionLabel>The Cycle in Detail</SectionLabel>
-          </FadeIn>
-
-          <div className="grid lg:grid-cols-[1fr_1.2fr] gap-14 lg:gap-20 items-start">
-            <FadeIn delay={80}>
-              <div className="lg:sticky lg:top-28">
-                <Image
-                  src="/triton-cycle.png"
-                  alt="TRITON operating cycle: deployed, performs monitoring, returns to docking station, recharge and repeat"
-                  width={913}
-                  height={700}
-                  className="w-full h-auto max-w-lg mx-auto"
-                  /* Diagram strokes are light gray — lift toward white for contrast on navy */
-                  style={{ filter: "brightness(1.55)" }}
-                />
-                <p className="mt-6 text-center text-xs text-[#90e0ef]/40 uppercase tracking-[0.15em]">
-                  The resident operating cycle
-                </p>
-              </div>
-            </FadeIn>
-
-            <div>
-              {cycleSteps.map((step, i) => (
-                <FadeIn key={step.n} delay={i * 60}>
-                  <div
-                    className={`py-7 grid grid-cols-[3rem_1fr] gap-6 items-start ${
-                      i < cycleSteps.length - 1 ? "border-b border-[#90e0ef]/[0.08]" : ""
-                    }`}
-                  >
-                    <span className="text-xs font-bold text-[#90e0ef]/25 uppercase tracking-[0.2em] pt-1">
-                      {step.n}
-                    </span>
-                    <div>
-                      <h3 className="font-semibold text-white text-base uppercase tracking-wide mb-2">
-                        {step.title}
-                      </h3>
-                      <p className="text-[#90e0ef] leading-relaxed">{step.body}</p>
-                    </div>
-                  </div>
-                </FadeIn>
-              ))}
-            </div>
-          </div>
         </div>
       </section>
 
