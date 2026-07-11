@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import FadeIn from "@/components/FadeIn";
 
 export const metadata: Metadata = {
@@ -21,12 +22,12 @@ const values = [
     body: "Intermittent data is a false sense of security. The future of infrastructure management is always-on.",
   },
   {
-    label: "03",
+    label: "02",
     title: "Depth, not breadth",
     body: "We do one thing — seafloor-resident autonomous monitoring — and we do it better than anyone.",
   },
   {
-    label: "04",
+    label: "03",
     title: "Honest about the hard parts",
     body: "Deep-tech is hard. We don't over-promise. We show our work and earn trust through rigorous validation.",
   },
@@ -37,23 +38,41 @@ export default function AboutPage() {
     <>
       {/* ─── HEADER ──────────────────────────────────────────────── */}
       <section className="px-6 lg:px-10 pt-24 pb-16">
-        <div className="mx-auto max-w-7xl">
-          <FadeIn>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#90e0ef]/50 mb-10">
-              About
-            </p>
-          </FadeIn>
-          <FadeIn delay={80}>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.08] tracking-tight text-white max-w-3xl">
-              We&apos;re here because infrastructure can&apos;t wait.
-            </h1>
-          </FadeIn>
-          <FadeIn delay={160}>
-            <p className="mt-8 text-base sm:text-lg text-[#90e0ef] max-w-xl leading-relaxed">
-              Noble Deep was founded on a single conviction: the monitoring gap
-              in subsea infrastructure is a solvable engineering problem, and
-              solving it protects lives, assets, and the environment.
-            </p>
+        <div className="mx-auto max-w-7xl grid lg:grid-cols-[1.4fr_1fr] gap-12 lg:gap-20 items-center">
+          <div>
+            <FadeIn>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#90e0ef]/50 mb-10">
+                About
+              </p>
+            </FadeIn>
+            <FadeIn delay={80}>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.08] tracking-tight text-white max-w-3xl">
+                We&apos;re here because infrastructure can&apos;t wait.
+              </h1>
+            </FadeIn>
+            <FadeIn delay={160}>
+              <p className="mt-8 text-base sm:text-lg text-[#90e0ef] max-w-xl leading-relaxed">
+                Noble Deep was founded on a single conviction: the monitoring gap
+                in subsea infrastructure is a solvable engineering problem, and
+                solving it protects lives, assets, and the environment.
+              </p>
+            </FadeIn>
+          </div>
+          <FadeIn delay={240}>
+            <figure className="max-w-md mx-auto lg:mx-0">
+              <Image
+                src="/images/founder-pitch.jpg"
+                alt="Andrew Jimenez presenting Noble Deep"
+                width={1365}
+                height={1731}
+                preload
+                className="w-full h-auto border border-[#90e0ef]/[0.12]"
+                style={{ boxShadow: "0 4px 40px rgba(0,0,0,0.3)" }}
+              />
+              <figcaption className="mt-4 text-xs text-[#90e0ef]/40 uppercase tracking-[0.15em]">
+                Presenting Noble Deep — Spring 2026.
+              </figcaption>
+            </figure>
           </FadeIn>
         </div>
       </section>
@@ -122,6 +141,23 @@ export default function AboutPage() {
               </FadeIn>
             ))}
           </div>
+
+          <FadeIn delay={240}>
+            <figure className="mt-14 max-w-xs">
+              <Image
+                src="/images/draper-founders.jpg"
+                alt="Andrew with Tim Draper at Draper University"
+                width={915}
+                height={1275}
+                loading="lazy"
+                className="w-full h-auto border border-[#90e0ef]/[0.12]"
+                style={{ boxShadow: "0 4px 40px rgba(0,0,0,0.3)" }}
+              />
+              <figcaption className="mt-4 text-xs text-[#90e0ef]/40 uppercase tracking-[0.15em]">
+                With Tim Draper — Draper University, Spring 2026 cohort.
+              </figcaption>
+            </figure>
+          </FadeIn>
         </div>
       </section>
 

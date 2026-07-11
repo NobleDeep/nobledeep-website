@@ -29,7 +29,6 @@ export default function Footer() {
               { href: "/", label: "Home" },
               { href: "/technology", label: "Technology" },
               { href: "/about", label: "About" },
-              { href: "/blog", label: "Blog" },
               { href: "/contact", label: "Contact" },
             ].map((link) => (
               <Link

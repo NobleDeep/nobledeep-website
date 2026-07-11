@@ -53,7 +53,7 @@ export default function HomePage() {
             </p>
 
             <h1 className="animate-hero animate-hero-2 text-4xl sm:text-5xl lg:text-6xl xl:text-[4.5rem] font-bold leading-[1.06] tracking-tight text-white max-w-4xl">
-              Offshore energy operators spend{" "}
+              Subsea inspection campaigns cost operators{" "}
               {/*
                 Silver/chrome so it reads as a hard number fact —
                 pops cleanly against the blue without being garish.
@@ -62,9 +62,9 @@ export default function HomePage() {
                 className="text-[#e8e8e8]"
                 style={{ textShadow: "0 0 30px rgba(232,232,232,0.40), 0 2px 6px rgba(0,0,0,0.35)" }}
               >
-                $200,000 per day
+                $50K–$200K+
               </span>{" "}
-              on inspection vessels.
+              per vessel day.
             </h1>
 
             <p className="animate-hero animate-hero-3 mt-5 text-3xl sm:text-4xl lg:text-5xl xl:text-[3.25rem] font-bold leading-[1.06] tracking-tight text-white">

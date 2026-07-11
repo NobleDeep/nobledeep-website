@@ -117,7 +117,6 @@ function Panel({ uc, onClose }: { uc: UseCase; onClose: () => void }) {
           fill
           className="object-cover"
           sizes="(max-width: 1024px) 100vw, 38vw"
-          priority={false}
           style={{ objectPosition: uc.objectPosition }}
         />
 
@@ -213,11 +212,13 @@ export default function WhereTritonWorks() {
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
               <h2 className="text-3xl sm:text-4xl font-bold text-white">
-                Where TRITON Works
+                Where Continuous Monitoring Matters
               </h2>
               <p className="mt-3 text-[#90e0ef]/70 max-w-lg text-sm sm:text-base leading-relaxed">
-                Select a location to explore the use case. Global offshore
-                infrastructure demands persistent, autonomous monitoring.
+                TRITON V1 targets infrastructure at ≤300 m — offshore wind
+                foundations, cables, and shallow-water assets. Deeper basins
+                and environmental monitoring applications are on the long-term
+                roadmap. Select a location to explore the use case.
               </p>
             </div>
             {active && (

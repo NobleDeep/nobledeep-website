@@ -65,7 +65,8 @@ const specs = [
   },
   {
     spec: "Communications",
-    value: "RF link to dock with autonomous fallback on signal loss",
+    value:
+      "Fully autonomous during missions — no tether, no surface link. Data offload and recharge via short-range link at the dock; acoustic command channel on the roadmap.",
   },
 ];
 
@@ -86,11 +87,25 @@ const deliverables = [
 ];
 
 /* ── Traction & roadmap ── */
-const roadmap = [
+type RoadmapItem = {
+  label: string;
+  title: string;
+  body: string;
+  image?: { src: string; alt: string; caption: string; width: number; height: number };
+};
+
+const roadmap: RoadmapItem[] = [
   {
     label: "May 2026",
     title: "MVP V1 — built in-house",
     body: "First full prototype designed and assembled in-house, validating the core vehicle architecture at component and subsystem level.",
+    image: {
+      src: "/images/demo-day-mvp.jpg",
+      alt: "Andrew Jimenez with MVP V1 at Draper University Demo Day",
+      caption: "MVP V1 at Draper University Demo Day — May 2026.",
+      width: 1600,
+      height: 1421,
+    },
   },
   {
     label: "Now",
@@ -223,7 +238,7 @@ export default function TechnologyPage() {
       <section className="px-6 lg:px-10 py-20 border-t border-[#90e0ef]/[0.1]" style={sectionBorder}>
         <div className="mx-auto max-w-7xl">
           <FadeIn>
-            <SectionLabel>Specifications — TRITON V1</SectionLabel>
+            <SectionLabel>TRITON V1 — Design Targets</SectionLabel>
           </FadeIn>
 
           <FadeIn delay={80}>
@@ -267,9 +282,9 @@ export default function TechnologyPage() {
 
           <FadeIn delay={140}>
             <p className="mt-5 text-xs text-[#90e0ef]/40 leading-relaxed max-w-2xl">
-              &ldquo;Pending&rdquo; indicates values not yet confirmed at the
-              current development stage. Specifications describe the TRITON V1
-              design and will be updated as validation progresses.
+              TRITON V1 is in active development. Confirmed values replace
+              targets as validation progresses; &ldquo;Pending&rdquo; marks
+              parameters we won&apos;t publish until measured.
             </p>
           </FadeIn>
         </div>
@@ -367,6 +382,22 @@ export default function TechnologyPage() {
                     {r.title}
                   </h3>
                   <p className="text-[#90e0ef] leading-relaxed max-w-xl">{r.body}</p>
+                  {r.image && (
+                    <figure className="mt-8 max-w-xl">
+                      <Image
+                        src={r.image.src}
+                        alt={r.image.alt}
+                        width={r.image.width}
+                        height={r.image.height}
+                        loading="lazy"
+                        className="w-full h-auto border border-[#90e0ef]/[0.12]"
+                        style={{ boxShadow: "0 4px 40px rgba(0,0,0,0.3)" }}
+                      />
+                      <figcaption className="mt-4 text-xs text-[#90e0ef]/40 uppercase tracking-[0.15em]">
+                        {r.image.caption}
+                      </figcaption>
+                    </figure>
+                  )}
                 </div>
               </div>
             </FadeIn>
@@ -419,6 +450,12 @@ export default function TechnologyPage() {
             <p className="text-[#90e0ef] mb-8 max-w-xl leading-relaxed">
               The TRITON one-pager combines the specification table, the
               operating cycle, and a one-line traction summary in a single PDF.
+            </p>
+          </FadeIn>
+          <FadeIn delay={120}>
+            <p className="text-[#90e0ef] mb-8 max-w-xl leading-relaxed">
+              We&apos;re selecting 2–3 early partners to shape TRITON&apos;s
+              validation program.
             </p>
           </FadeIn>
           <FadeIn delay={160}>
