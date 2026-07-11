@@ -137,16 +137,14 @@ export default function AboutPage() {
             ))}
           </div>
 
-          <FadeIn delay={240}>
-            <CaptionedImage
-              src="/images/draper-founders.jpg"
-              alt="Andrew with Tim Draper at Draper University"
-              caption="With Tim Draper — Draper University, Spring 2026 cohort."
-              aspect="aspect-[3/4]"
-              sizes="(max-width: 640px) 100vw, 320px"
-              className="mt-14 max-w-xs"
-            />
-          </FadeIn>
+          {/*
+            Team-moment photo slot — intentionally empty for now. The Draper
+            photo (public/images/draper-founders.jpg) returns here once a
+            matching photo set exists for Andrew, Gabriel, and Brandon:
+            <CaptionedImage src="..." alt="..." caption="..."
+              aspect="aspect-[3/4]" sizes="(max-width: 640px) 100vw, 320px"
+              className="mt-14 max-w-xs" />
+          */}
         </div>
       </section>
 

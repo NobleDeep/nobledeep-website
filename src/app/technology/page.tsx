@@ -139,8 +139,8 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 export default function TechnologyPage() {
   return (
     <>
-      {/* ─── HEADER + STATUS / VALIDATION ────────────────────────── */}
-      <section className="px-6 lg:px-10 pt-24 pb-16">
+      {/* ─── HERO — statement + scroll-scrubbed cycle schematic ──── */}
+      <section className="px-6 lg:px-10 pt-24 pb-20">
         <div className="mx-auto max-w-7xl">
           <FadeIn>
             <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#90e0ef]/50 mb-10">
@@ -148,23 +148,40 @@ export default function TechnologyPage() {
             </p>
           </FadeIn>
           <FadeIn delay={80}>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.08] tracking-tight text-white max-w-3xl">
-              The TRITON V1 system.
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.08] tracking-tight text-white max-w-4xl">
+              TRITON — a new way to monitor subsea infrastructure.
             </h1>
           </FadeIn>
           <FadeIn delay={160}>
             <p className="mt-8 text-base sm:text-lg text-[#90e0ef] max-w-2xl leading-relaxed">
-              A seafloor-resident autonomous inspection vehicle and docking
-              station, designed for continuous monitoring of subsea
-              infrastructure. This page describes the system as designed;
-              current maturity is stated below.
+              Resident on the seafloor, TRITON watches continuously and
+              surfaces only the data that matters — no vessel mobilization,
+              no gaps in coverage.
+            </p>
+          </FadeIn>
+
+          <div className="mt-14">
+            <HowTritonWorks />
+          </div>
+        </div>
+      </section>
+
+      {/* ─── THE SYSTEM + STATUS / VALIDATION ────────────────────── */}
+      <section className="px-6 lg:px-10 py-16 border-t border-[#90e0ef]/[0.1]" style={sectionBorder}>
+        <div className="mx-auto max-w-7xl">
+          <FadeIn>
+            <p className="text-base sm:text-lg text-[#90e0ef] max-w-2xl leading-relaxed">
+              The TRITON V1 system: a seafloor-resident autonomous inspection
+              vehicle and docking station, designed for continuous monitoring
+              of subsea infrastructure. This page describes the system as
+              designed; current maturity is stated below.
             </p>
           </FadeIn>
 
           {/* Status / validation */}
-          <FadeIn delay={240}>
+          <FadeIn delay={120}>
             <div
-              className="mt-12 border border-[#90e0ef]/[0.15] bg-[#0077b6]/[0.08] px-6 sm:px-8 py-6 max-w-3xl"
+              className="mt-10 border border-[#90e0ef]/[0.15] bg-[#0077b6]/[0.08] px-6 sm:px-8 py-6 max-w-3xl"
               style={{ boxShadow: "0 0 30px rgba(0,119,182,0.12)" }}
             >
               <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#22d3ee] mb-3">
@@ -181,16 +198,6 @@ export default function TechnologyPage() {
               </p>
             </div>
           </FadeIn>
-        </div>
-      </section>
-
-      {/* ─── HOW TRITON WORKS — scroll-scrubbed cycle schematic ──── */}
-      <section className="px-6 lg:px-10 py-20 border-t border-[#90e0ef]/[0.1]" style={sectionBorder}>
-        <div className="mx-auto max-w-7xl">
-          <FadeIn>
-            <SectionLabel>How TRITON Works</SectionLabel>
-          </FadeIn>
-          <HowTritonWorks />
         </div>
       </section>
 
