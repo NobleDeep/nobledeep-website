@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import CaptionedImage from "@/components/CaptionedImage";
 import FadeIn from "@/components/FadeIn";
+import HowTritonWorks from "@/components/HowTritonWorks";
 
 export const metadata: Metadata = {
   title: "Technology — Noble Deep",
@@ -19,7 +21,7 @@ const cycleSteps = [
   {
     n: "02",
     title: "Patrol",
-    body: "The vehicle undocks and navigates pre-planned inspection routes along the structure, maintaining position with sensor-fused navigation (IMU, DVL, motor encoders) and holding safe standoff via wall-proximity sensing.",
+    body: "The vehicle undocks and navigates pre-planned inspection routes along the structure, maintaining position with sensor-fused navigation (IMU, DVL, motor encoders) and using fused ranging data for wall-proximity awareness during transit.",
   },
   {
     n: "03",
@@ -51,13 +53,13 @@ const specs = [
   { spec: "Total vehicle weight", value: "Pending" },
   { spec: "Dimensions", value: "Pending" },
   {
-    spec: "Navigation sensors",
-    value: "IMU, DVL, motor encoders, GPS surface fix — sensor-fused pose estimation",
+    spec: "Navigation & positioning",
+    value:
+      "IMU, DVL, motor encoders, GPS surface fix, USBL acoustic positioning, sound velocity profiler — sensor-fused pose estimation",
   },
   {
-    spec: "Inspection sensors",
-    value:
-      "Camera, multibeam echosounder, sub-bottom profiler, sound velocity profiler, USBL acoustic positioning, cathodic-protection probe, wall-proximity sensing",
+    spec: "Inspection payload",
+    value: "Camera, multibeam echosounder, sub-bottom profiler, cathodic-protection probe",
   },
   {
     spec: "Onboard compute",
@@ -91,7 +93,7 @@ type RoadmapItem = {
   label: string;
   title: string;
   body: string;
-  image?: { src: string; alt: string; caption: string; width: number; height: number };
+  image?: { src: string; alt: string; caption: string };
 };
 
 const roadmap: RoadmapItem[] = [
@@ -103,8 +105,6 @@ const roadmap: RoadmapItem[] = [
       src: "/images/demo-day-mvp.jpg",
       alt: "Andrew Jimenez with MVP V1 at Draper University Demo Day",
       caption: "MVP V1 at Draper University Demo Day — May 2026.",
-      width: 1600,
-      height: 1421,
     },
   },
   {
@@ -184,11 +184,21 @@ export default function TechnologyPage() {
         </div>
       </section>
 
-      {/* ─── HOW IT WORKS ────────────────────────────────────────── */}
+      {/* ─── HOW TRITON WORKS — scroll-scrubbed cycle schematic ──── */}
       <section className="px-6 lg:px-10 py-20 border-t border-[#90e0ef]/[0.1]" style={sectionBorder}>
         <div className="mx-auto max-w-7xl">
           <FadeIn>
-            <SectionLabel>How It Works</SectionLabel>
+            <SectionLabel>How TRITON Works</SectionLabel>
+          </FadeIn>
+          <HowTritonWorks />
+        </div>
+      </section>
+
+      {/* ─── THE CYCLE IN DETAIL ─────────────────────────────────── */}
+      <section className="px-6 lg:px-10 py-20 border-t border-[#90e0ef]/[0.1]" style={sectionBorder}>
+        <div className="mx-auto max-w-7xl">
+          <FadeIn>
+            <SectionLabel>The Cycle in Detail</SectionLabel>
           </FadeIn>
 
           <div className="grid lg:grid-cols-[1fr_1.2fr] gap-14 lg:gap-20 items-start">
@@ -383,20 +393,14 @@ export default function TechnologyPage() {
                   </h3>
                   <p className="text-[#90e0ef] leading-relaxed max-w-xl">{r.body}</p>
                   {r.image && (
-                    <figure className="mt-8 max-w-xl">
-                      <Image
-                        src={r.image.src}
-                        alt={r.image.alt}
-                        width={r.image.width}
-                        height={r.image.height}
-                        loading="lazy"
-                        className="w-full h-auto border border-[#90e0ef]/[0.12]"
-                        style={{ boxShadow: "0 4px 40px rgba(0,0,0,0.3)" }}
-                      />
-                      <figcaption className="mt-4 text-xs text-[#90e0ef]/40 uppercase tracking-[0.15em]">
-                        {r.image.caption}
-                      </figcaption>
-                    </figure>
+                    <CaptionedImage
+                      src={r.image.src}
+                      alt={r.image.alt}
+                      caption={r.image.caption}
+                      aspect="aspect-[9/8]"
+                      sizes="(max-width: 640px) 100vw, 576px"
+                      className="mt-8 max-w-xl"
+                    />
                   )}
                 </div>
               </div>

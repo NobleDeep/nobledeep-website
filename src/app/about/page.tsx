@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
+import CaptionedImage from "@/components/CaptionedImage";
 import FadeIn from "@/components/FadeIn";
 
 export const metadata: Metadata = {
@@ -59,20 +59,15 @@ export default function AboutPage() {
             </FadeIn>
           </div>
           <FadeIn delay={240}>
-            <figure className="max-w-md mx-auto lg:mx-0">
-              <Image
-                src="/images/founder-pitch.jpg"
-                alt="Andrew Jimenez presenting Noble Deep"
-                width={1365}
-                height={1731}
-                preload
-                className="w-full h-auto border border-[#90e0ef]/[0.12]"
-                style={{ boxShadow: "0 4px 40px rgba(0,0,0,0.3)" }}
-              />
-              <figcaption className="mt-4 text-xs text-[#90e0ef]/40 uppercase tracking-[0.15em]">
-                Presenting Noble Deep — Spring 2026.
-              </figcaption>
-            </figure>
+            <CaptionedImage
+              src="/images/founder-pitch.jpg"
+              alt="Andrew Jimenez presenting Noble Deep"
+              caption="Presenting Noble Deep — Spring 2026."
+              aspect="aspect-[4/5]"
+              sizes="(max-width: 1024px) 100vw, 40vw"
+              preload
+              className="max-w-md mx-auto lg:mx-0"
+            />
           </FadeIn>
         </div>
       </section>
@@ -143,20 +138,14 @@ export default function AboutPage() {
           </div>
 
           <FadeIn delay={240}>
-            <figure className="mt-14 max-w-xs">
-              <Image
-                src="/images/draper-founders.jpg"
-                alt="Andrew with Tim Draper at Draper University"
-                width={915}
-                height={1275}
-                loading="lazy"
-                className="w-full h-auto border border-[#90e0ef]/[0.12]"
-                style={{ boxShadow: "0 4px 40px rgba(0,0,0,0.3)" }}
-              />
-              <figcaption className="mt-4 text-xs text-[#90e0ef]/40 uppercase tracking-[0.15em]">
-                With Tim Draper — Draper University, Spring 2026 cohort.
-              </figcaption>
-            </figure>
+            <CaptionedImage
+              src="/images/draper-founders.jpg"
+              alt="Andrew with Tim Draper at Draper University"
+              caption="With Tim Draper — Draper University, Spring 2026 cohort."
+              aspect="aspect-[3/4]"
+              sizes="(max-width: 640px) 100vw, 320px"
+              className="mt-14 max-w-xs"
+            />
           </FadeIn>
         </div>
       </section>
