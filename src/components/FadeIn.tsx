@@ -9,7 +9,8 @@ interface Props {
   y?: number;
 }
 
-export default function FadeIn({ children, delay = 0, className = "", y = 22 }: Props) {
+/* Reveals children once when scrolled into view. Reduced motion shows them immediately (see globals.css). */
+export default function FadeIn({ children, delay = 0, className = "", y = 24 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
 
@@ -23,7 +24,7 @@ export default function FadeIn({ children, delay = 0, className = "", y = 22 }: 
           obs.disconnect();
         }
       },
-      { threshold: 0.08, rootMargin: "0px 0px -30px 0px" }
+      { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
     );
     obs.observe(el);
     return () => obs.disconnect();
@@ -32,12 +33,13 @@ export default function FadeIn({ children, delay = 0, className = "", y = 22 }: 
   return (
     <div
       ref={ref}
+      data-reveal
       className={className}
       style={{
         transitionDelay: `${delay}ms`,
         opacity: visible ? 1 : 0,
         transform: visible ? "translateY(0)" : `translateY(${y}px)`,
-        transition: "opacity 0.75s cubic-bezier(0.22,1,0.36,1), transform 0.75s cubic-bezier(0.22,1,0.36,1)",
+        transition: "opacity 0.8s cubic-bezier(0.22,1,0.36,1), transform 0.8s cubic-bezier(0.22,1,0.36,1)",
       }}
     >
       {children}

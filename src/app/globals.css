@@ -1,43 +1,61 @@
 @import "tailwindcss";
 
+/*
+  Design tokens. Navy palette from shallow to abyss; cyan is the single
+  instrument accent and amber is reserved for findings and severity.
+*/
 @theme inline {
   --font-sans: var(--font-space-grotesk);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+@theme {
+  --color-shallow: #0b2b4a;
+  --color-navy: #061d36;
+  --color-deep: #03122a;
+  --color-trench: #020a18;
+  --color-abyss: #01040b;
+  --color-cyan: #22d3ee;
+  --color-foam: #90e0ef;
+  --color-body: #b4cede;
+  --color-muted: #87a6ba;
+  --color-amber: #f5b544;
 }
 
 /*
-  Ocean descent — bright sunlit shallows at top,
-  descending through navy → deep navy → abyss black.
+  Descent. The document background runs from lit shallow water at the top
+  of every page to near-black at the bottom, so scrolling down reads as
+  going deeper. It is one gradient over the whole document height, which
+  means there are no section seams to line up.
 */
 html {
-  background: linear-gradient(
-    to bottom,
-    #0096c7 0%,
-    #0077b6 12%,
-    #023e8a 38%,
-    #03045e 60%,
-    #010118 78%,
-    #000000 93%
-  );
+  background-color: var(--color-abyss);
+  background-image:
+    radial-gradient(120% 60rem at 50% -10rem, rgba(34, 140, 190, 0.22) 0%, transparent 70%),
+    linear-gradient(
+      to bottom,
+      #0b2b4a 0%,
+      #072340 14%,
+      #051a33 32%,
+      #031228 52%,
+      #020b1b 72%,
+      #01060f 88%,
+      #01040b 100%
+    );
   background-repeat: no-repeat;
-  background-attachment: scroll;
   min-height: 100%;
-  /* Crisp subpixel rendering */
   text-rendering: optimizeLegibility;
   -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
   background: transparent;
-  color: #e2e8f0;
+  color: var(--color-body);
   font-family: var(--font-space-grotesk), system-ui, -apple-system, sans-serif;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-/* All images: pixel-perfect at their native resolution */
-img, canvas {
-  image-rendering: auto;
 }
 
 ::selection {
@@ -45,72 +63,143 @@ img, canvas {
   color: #fff;
 }
 
-/* ── Hero page-load stagger ── */
+/* Visible keyboard focus everywhere; mouse clicks don't show the ring. */
+:focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+/* ── Monospace data label ── */
+.label-mono {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(144, 224, 239, 0.72);
+}
+
+/* ── Buttons ── */
+.btn-primary,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.95rem 1.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+.btn-primary {
+  background: #fff;
+  color: var(--color-abyss);
+  border: 1px solid #fff;
+}
+.btn-primary:hover {
+  background: var(--color-cyan);
+  border-color: var(--color-cyan);
+}
+.btn-secondary {
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #fff;
+}
+.btn-primary svg,
+.btn-secondary svg,
+.link-arrow svg {
+  transition: transform 0.25s ease;
+}
+.btn-primary:hover svg,
+.btn-secondary:hover svg,
+.link-arrow:hover svg {
+  transform: translateX(3px);
+}
+
+/* ── Hero page-load stagger (short, so the headline paints early) ── */
 @keyframes heroFadeUp {
-  from { opacity: 0; transform: translateY(32px); }
+  from { opacity: 0; transform: translateY(18px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
 .animate-hero {
-  opacity: 0;
-  animation: heroFadeUp 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: heroFadeUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-.animate-hero-1 { animation-delay: 0.05s; }
-.animate-hero-2 { animation-delay: 0.22s; }
-.animate-hero-3 { animation-delay: 0.40s; }
-.animate-hero-4 { animation-delay: 0.56s; }
-.animate-hero-5 { animation-delay: 0.72s; }
-.animate-hero-6 { animation-delay: 0.92s; }
-
-/* ── Scroll-triggered fade-in handled by FadeIn component ── */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(22px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ── Button glow pulse ── */
-@keyframes btnGlow {
-  0%, 100% {
-    box-shadow: 0 0 14px rgba(0,119,182,0.20), 0 0 0 1px rgba(144,224,239,0.10);
-  }
-  50% {
-    box-shadow: 0 0 44px rgba(0,183,222,0.55), 0 0 0 1px rgba(144,224,239,0.32);
-  }
-}
-
-.btn-glow {
-  animation: btnGlow 3.5s ease-in-out infinite;
-}
+.animate-hero-1 { animation-delay: 0s; }
+.animate-hero-2 { animation-delay: 0.08s; }
+.animate-hero-3 { animation-delay: 0.18s; }
+.animate-hero-4 { animation-delay: 0.28s; }
+.animate-hero-5 { animation-delay: 0.38s; }
 
 /* ── Map marker pulse ring ── */
 @keyframes mapPing {
-  0%   { transform: scale(1);   opacity: 0.55; }
-  80%  { transform: scale(3.2); opacity: 0; }
-  100% { transform: scale(3.2); opacity: 0; }
+  0%   { transform: scale(1);   opacity: 0.6; }
+  80%  { transform: scale(3);   opacity: 0; }
+  100% { transform: scale(3);   opacity: 0; }
+}
+.map-ping {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: mapPing 2.6s ease-out infinite;
 }
 
-.map-ping {
-  transform-box:    fill-box;
-  transform-origin: center;
-  animation:        mapPing 2.6s ease-out infinite;
+/* ── Panel content crossfade ── */
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.panel-in {
+  animation: panelIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* ── Hero scroll cue ── */
 @keyframes scrollCue {
-  0%, 100% { transform: translateY(0);   opacity: 0.7; }
-  50%       { transform: translateY(6px); opacity: 1; }
+  0%, 100% { transform: translateY(0);   opacity: 0.6; }
+  50%      { transform: translateY(6px); opacity: 1; }
 }
-
 .scroll-cue {
   animation: scrollCue 2.4s ease-in-out infinite;
 }
 
-/* ── Draper badge glow ── */
-@keyframes glowPulse {
-  0%, 100% { box-shadow: 0 0 18px rgba(0,119,182,0.25), 0 0 0 1px rgba(144,224,239,0.18); }
-  50%       { box-shadow: 0 0 32px rgba(0,119,182,0.45), 0 0 0 1px rgba(144,224,239,0.35); }
+/* ── Hero condition-report card: rows reveal in sequence ── */
+.report-card {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
+.report-card.is-on {
+  opacity: 1;
+  transform: translateY(0);
+}
+.report-card .report-row {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.report-card.is-on .report-row { opacity: 1; }
+.report-card.is-on .report-row:nth-child(1) { transition-delay: 0.25s; }
+.report-card.is-on .report-row:nth-child(2) { transition-delay: 0.5s; }
+.report-card.is-on .report-row:nth-child(3) { transition-delay: 0.75s; }
+.report-card.is-on .report-row:nth-child(4) { transition-delay: 1s; }
 
-.draper-badge {
-  animation: glowPulse 3s ease-in-out infinite;
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .animate-hero,
+  .scroll-cue,
+  .map-ping,
+  .panel-in {
+    animation: none !important;
+  }
+  .report-card,
+  .report-card .report-row {
+    transition: none !important;
+  }
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }

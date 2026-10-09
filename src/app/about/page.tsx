@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import CaptionedImage from "@/components/CaptionedImage";
 import FadeIn from "@/components/FadeIn";
+import { ArrowIcon, Eyebrow, Section } from "@/components/ui";
+import { pageMeta } from "@/lib/meta";
 
-export const metadata: Metadata = {
-  title: "About — Noble Deep",
-  description:
-    "Noble Deep is building TRITON to solve the subsea monitoring gap. Learn about our mission and team.",
-};
+export const metadata: Metadata = pageMeta(
+  "About",
+  "Noble Deep develops persistent autonomous underwater vehicles that catch subsea infrastructure problems early. Our mission, principles, and team.",
+  "/about"
+);
 
 const team = [
   { name: "Andrew Jimenez", role: "Co-Founder & CEO" },
@@ -24,7 +26,7 @@ const values = [
   {
     label: "02",
     title: "Depth, not breadth",
-    body: "We do one thing — seafloor-resident autonomous monitoring — and we do it better than anyone.",
+    body: "We do one thing — continuous autonomous inspection of subsea infrastructure — and we do it better than anyone.",
   },
   {
     label: "03",
@@ -37,21 +39,19 @@ export default function AboutPage() {
   return (
     <>
       {/* ─── HEADER ──────────────────────────────────────────────── */}
-      <section className="px-6 lg:px-10 pt-24 pb-16">
-        <div className="mx-auto max-w-7xl grid lg:grid-cols-[1.4fr_1fr] gap-12 lg:gap-20 items-center">
+      <section className="px-6 lg:px-10 pt-24 lg:pt-32 pb-20 lg:pb-28">
+        <div className="mx-auto max-w-7xl grid lg:grid-cols-[1.4fr_1fr] gap-14 lg:gap-20 items-center">
           <div>
             <FadeIn>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#90e0ef]/50 mb-10">
-                About
-              </p>
+              <Eyebrow>About</Eyebrow>
             </FadeIn>
             <FadeIn delay={80}>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.08] tracking-tight text-white max-w-3xl">
+              <h1 className="mt-10 text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.0] tracking-[-0.03em] text-white max-w-3xl">
                 We&apos;re here because infrastructure can&apos;t wait.
               </h1>
             </FadeIn>
             <FadeIn delay={160}>
-              <p className="mt-8 text-base sm:text-lg text-[#90e0ef] max-w-xl leading-relaxed">
+              <p className="mt-10 text-lg lg:text-xl text-body max-w-xl leading-relaxed">
                 Noble Deep was founded on a single conviction: the monitoring gap
                 in subsea infrastructure is a solvable engineering problem, and
                 solving it protects lives, assets, and the environment.
@@ -62,7 +62,7 @@ export default function AboutPage() {
             <CaptionedImage
               src="/images/founder-pitch.jpg"
               alt="Andrew Jimenez presenting Noble Deep"
-              caption="Presenting Noble Deep — Spring 2026."
+              caption="Presenting Noble Deep, Spring 2026."
               aspect="aspect-[4/5]"
               sizes="(max-width: 1024px) 100vw, 40vw"
               preload
@@ -73,145 +73,100 @@ export default function AboutPage() {
       </section>
 
       {/* ─── MISSION ─────────────────────────────────────────────── */}
-      <section
-        className="px-6 lg:px-10 py-16 border-t border-[#90e0ef]/[0.1]"
-        style={{ boxShadow: "0 -1px 0 0 rgba(144,224,239,0.04)" }}
-      >
-        <div className="mx-auto max-w-7xl grid lg:grid-cols-[1fr_1.4fr] gap-16 lg:gap-24">
+      <Section band depth="040 m">
+        <div className="grid lg:grid-cols-[1fr_1.35fr] gap-10 lg:gap-24">
           <FadeIn>
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#90e0ef]/50 mb-6">
-                Mission
-              </p>
-              <h2 className="text-2xl sm:text-3xl font-bold text-white leading-tight">
-                Continuous awareness of what&apos;s happening beneath the surface.
-              </h2>
-            </div>
+            <Eyebrow index="01">Mission</Eyebrow>
+            <h2 className="mt-8 text-3xl sm:text-4xl lg:text-5xl font-bold leading-[1.06] tracking-[-0.02em] text-white">
+              Continuous awareness of what&apos;s happening beneath the surface.
+            </h2>
           </FadeIn>
           <FadeIn delay={100}>
-            <div className="space-y-5 text-[#90e0ef] leading-relaxed text-base">
-              <p>
-                Offshore wind and oil &amp; gas operators manage billions of
-                dollars of infrastructure in one of the harshest environments on
-                Earth. Yet the monitoring strategy relies on survey vessels that
-                arrive a few times a year — leaving months-long windows where
-                failures can develop undetected.
-              </p>
-              <p>
-                Noble Deep is building TRITON, a seafloor-resident AUV that
-                closes that window permanently. TRITON lives on the seafloor,
-                runs autonomous inspection missions, and delivers structural
-                health data to operations teams — without surface support,
-                without weather delays, without gaps.
-              </p>
-            </div>
+            <p className="lg:pt-[4.5rem] text-body text-lg leading-relaxed">
+              Offshore wind and oil &amp; gas operators manage billions of
+              dollars of infrastructure in one of the harshest environments on
+              Earth. Yet the monitoring strategy relies on survey vessels that
+              arrive a few times a year — leaving months-long windows where
+              failures can develop undetected.
+            </p>
           </FadeIn>
         </div>
-      </section>
+
+        {/* Mission statement: the page's centerpiece. Wording is fixed; do not edit. */}
+        <FadeIn delay={120}>
+          <figure className="mt-20 lg:mt-28 border-l-2 border-cyan pl-6 sm:pl-10 lg:pl-14">
+            <figcaption className="label-mono !text-cyan">Our Mission</figcaption>
+            <blockquote className="mt-8 text-2xl sm:text-3xl lg:text-[2.6rem] font-medium leading-[1.25] tracking-[-0.015em] text-white max-w-5xl">
+              <p>
+                To prevent subsea infrastructure failures through spotting problems early, by developing persistent autonomous underwater vehicles. These vehicles will reduce reliance on traditional costly vessels, delivering consistent actionable data to energy suppliers and subsea infrastructure operators who provide sources of our light, fuel, and internet.
+              </p>
+            </blockquote>
+          </figure>
+        </FadeIn>
+      </Section>
 
       {/* ─── TEAM ────────────────────────────────────────────────── */}
-      <section
-        className="px-6 lg:px-10 py-20 border-t border-[#90e0ef]/[0.1]"
-        style={{ boxShadow: "0 -1px 0 0 rgba(144,224,239,0.04)" }}
-      >
-        <div className="mx-auto max-w-7xl">
-          <FadeIn>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#90e0ef]/50 mb-12">
-              Team
-            </p>
-          </FadeIn>
-
-          <div className="grid sm:grid-cols-3 gap-0 border border-[#90e0ef]/[0.1] divide-x divide-[#90e0ef]/[0.1]"
-            style={{ boxShadow: "0 4px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(144,224,239,0.06)" }}>
-            {team.map((member, i) => (
-              <FadeIn key={member.name} delay={i * 80}>
-                <div className="p-8 sm:p-10">
-                  <p className="text-white font-semibold text-lg leading-tight">
-                    {member.name}
-                  </p>
-                  <p className="text-[#90e0ef]/60 text-sm mt-2 tracking-wide">
-                    {member.role}
-                  </p>
-                </div>
-              </FadeIn>
-            ))}
-          </div>
-
-          {/*
-            Team-moment photo slot — intentionally empty for now. The Draper
-            photo (public/images/draper-founders.jpg) returns here once a
-            matching photo set exists for Andrew, Gabriel, and Brandon:
-            <CaptionedImage src="..." alt="..." caption="..."
-              aspect="aspect-[3/4]" sizes="(max-width: 640px) 100vw, 320px"
-              className="mt-14 max-w-xs" />
-          */}
-        </div>
-      </section>
-
-      {/* ─── VALUES ──────────────────────────────────────────────── */}
-      <section
-        className="px-6 lg:px-10 py-20 border-t border-[#90e0ef]/[0.1]"
-        style={{ boxShadow: "0 -1px 0 0 rgba(144,224,239,0.04)" }}
-      >
-        <div className="mx-auto max-w-7xl">
-          <FadeIn>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#90e0ef]/50 mb-10">
-              Principles
-            </p>
-          </FadeIn>
-
-          {values.map((v, i) => (
-            <FadeIn key={v.title} delay={i * 60}>
-              <div
-                className={`py-8 grid grid-cols-[3rem_1fr] sm:grid-cols-[6rem_1fr] gap-6 sm:gap-10 ${
-                  i < values.length - 1 ? "border-b border-[#90e0ef]/[0.08]" : ""
-                }`}
-              >
-                <span className="text-xs font-bold text-[#90e0ef]/25 uppercase tracking-[0.2em] pt-0.5">
-                  {v.label}
-                </span>
-                <div>
-                  <h3 className="font-semibold text-white text-base uppercase tracking-wide mb-2">
-                    {v.title}
-                  </h3>
-                  <p className="text-[#90e0ef] leading-relaxed max-w-xl">
-                    {v.body}
-                  </p>
-                </div>
+      <Section depth="080 m">
+        <FadeIn>
+          <Eyebrow index="02">Team</Eyebrow>
+        </FadeIn>
+        <div className="mt-12 grid sm:grid-cols-3 gap-px bg-foam/12 border border-foam/12">
+          {team.map((member, i) => (
+            <FadeIn key={member.name} delay={i * 80} className="h-full">
+              <div className="h-full bg-[#041629] p-8 lg:p-10">
+                <p className="text-white font-bold text-xl leading-tight">{member.name}</p>
+                <p className="mt-3 label-mono">{member.role}</p>
               </div>
             </FadeIn>
           ))}
         </div>
-      </section>
+
+        {/*
+          Team-moment photo slot, intentionally empty for now. The Draper
+          photo (public/images/draper-founders.jpg) returns here once a
+          matching photo set exists for Andrew, Gabriel, and Brandon.
+        */}
+      </Section>
+
+      {/* ─── PRINCIPLES ──────────────────────────────────────────── */}
+      <Section band depth="120 m">
+        <FadeIn>
+          <Eyebrow index="03">Principles</Eyebrow>
+        </FadeIn>
+        <div className="mt-12 border-t border-foam/15">
+          {values.map((v, i) => (
+            <FadeIn key={v.title} delay={i * 60}>
+              <div className="group grid grid-cols-[3rem_1fr] sm:grid-cols-[6rem_1fr_1.3fr] gap-x-6 sm:gap-x-10 gap-y-3 py-9 border-b border-foam/15">
+                <span className="font-mono text-sm text-cyan pt-1">{v.label}</span>
+                <h3 className="text-xl lg:text-2xl font-bold uppercase tracking-[0.02em] text-white">
+                  {v.title}
+                </h3>
+                <p className="col-start-2 sm:col-start-3 text-body text-lg leading-relaxed">{v.body}</p>
+              </div>
+            </FadeIn>
+          ))}
+        </div>
+      </Section>
 
       {/* ─── CTA ─────────────────────────────────────────────────── */}
-      <section
-        className="px-6 lg:px-10 py-24 border-t border-[#90e0ef]/[0.1]"
-        style={{ boxShadow: "0 -1px 0 0 rgba(144,224,239,0.04)" }}
-      >
-        <div className="mx-auto max-w-7xl">
-          <FadeIn>
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
-              Interested in what we&apos;re building?
-            </h2>
-          </FadeIn>
-          <FadeIn delay={80}>
-            <p className="text-[#90e0ef] mb-8">Operators, investors, engineers.</p>
-          </FadeIn>
-          <FadeIn delay={160}>
-            <Link
-              href="/contact"
-              className="inline-flex items-center gap-3 border border-[#90e0ef]/30 px-6 py-3.5 text-xs font-semibold uppercase tracking-[0.15em] text-white transition-all hover:border-[#22d3ee]/60 hover:text-[#22d3ee]"
-              style={{ boxShadow: "0 0 20px rgba(0,119,182,0.15)" }}
-            >
+      <Section depth="160 m">
+        <FadeIn>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.04] tracking-[-0.025em] text-white max-w-3xl">
+            Interested in what we&apos;re building?
+          </h2>
+        </FadeIn>
+        <FadeIn delay={80}>
+          <p className="mt-6 text-lg text-body">Operators, investors, engineers.</p>
+        </FadeIn>
+        <FadeIn delay={160}>
+          <div className="mt-10">
+            <Link href="/contact" className="btn-primary">
               Contact Us
-              <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
+              <ArrowIcon />
             </Link>
-          </FadeIn>
-        </div>
-      </section>
+          </div>
+        </FadeIn>
+      </Section>
     </>
   );
 }

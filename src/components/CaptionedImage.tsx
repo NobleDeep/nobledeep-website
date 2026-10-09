@@ -25,13 +25,10 @@ export default function CaptionedImage({
 }) {
   return (
     <figure className={className}>
-      <div
-        className={`relative overflow-hidden border border-[#90e0ef]/[0.1] ${aspect}`}
-        style={{ boxShadow: "0 4px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(144,224,239,0.06)" }}
-      >
+      <div className={`relative overflow-hidden border border-foam/15 shadow-[0_8px_40px_rgba(0,0,0,0.35)] ${aspect}`}>
         <Image src={src} alt={alt} fill sizes={sizes} preload={preload} className="object-cover" />
       </div>
-      <figcaption className="mt-4 text-xs text-[#90e0ef]/40 uppercase tracking-[0.15em] leading-relaxed">
+      <figcaption className="mt-4 font-mono text-[11px] text-muted uppercase tracking-[0.12em] leading-relaxed">
         {caption}
       </figcaption>
     </figure>
