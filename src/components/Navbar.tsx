@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -75,21 +76,14 @@ export default function Navbar() {
 
           {/* ── Logo ── */}
           <Link href="/" className="flex items-center shrink-0 group">
-            {/*
-              Transparent cutout PNG (mark + wordmark) — sits directly on
-              any background, no blend-mode compositing needed.
-            */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            {/* Transparent cutout PNG (mark + wordmark), served resized for its 44px display height */}
+            <Image
               src="/nd-logo-cutout.png"
               alt="Noble Deep home"
-              className="group-hover:opacity-100 opacity-90 transition-opacity"
-              style={{
-                height:     "44px",
-                width:      "auto",
-                display:    "block",
-                flexShrink: 0,
-              }}
+              width={70}
+              height={44}
+              preload
+              className="block h-11 w-auto shrink-0 opacity-90 group-hover:opacity-100 transition-opacity"
             />
           </Link>
 

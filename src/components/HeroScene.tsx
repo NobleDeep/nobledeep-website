@@ -569,358 +569,372 @@ export default function HeroScene() {
   const timeRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    const root = rootRef.current!;
-    const canvas = canvasRef.current!;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    // Set up after first paint, when the main thread is idle, so the scene never competes with the page's first render.
+    let cleanup: (() => void) | undefined;
+    let cancelled = false;
+    const init = (): (() => void) | undefined => {
+      const root = rootRef.current;
+      const canvas = canvasRef.current;
+      if (!root || !canvas) return;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const sprite = makeSprite();
-    const staticLayer = document.createElement("canvas");
-    const caustics = causticRef.current ? initCaustics(causticRef.current) : null;
-    const monoFont =
-      getComputedStyle(document.documentElement).getPropertyValue("--font-jetbrains-mono").trim() || "monospace";
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const sprite = makeSprite();
+      const staticLayer = document.createElement("canvas");
+      const caustics = causticRef.current ? initCaustics(causticRef.current) : null;
+      const monoFont =
+        getComputedStyle(document.documentElement).getPropertyValue("--font-jetbrains-mono").trim() || "monospace";
 
-    let g = layout(1, 1);
-    let dpr = 1;
-    let snow: Flake[] = [];
-    let trail: { x: number; y: number; t: number }[] = [];
-    let lastTrail = 0;
-    let sceneT = reduced ? STATIC_T : 0.4;
-    let missionT = 6138; // seconds; HUD mission clock starts at 01:42:18
-    let raf = 0;
-    let last = 0;
-    let running = false;
-    let onscreen = true;
-    let lastHud = -1;
-    let cardOn = false;
+      let g = layout(1, 1);
+      let dpr = 1;
+      let snow: Flake[] = [];
+      let trail: { x: number; y: number; t: number }[] = [];
+      let lastTrail = 0;
+      let sceneT = reduced ? STATIC_T : 0.4;
+      let missionT = 6138; // seconds; HUD mission clock starts at 01:42:18
+      let raf = 0;
+      let last = 0;
+      let running = false;
+      let onscreen = true;
+      let lastHud = -1;
+      let cardOn = false;
 
-    const resize = () => {
-      const W = root.clientWidth;
-      const H = root.clientHeight;
-      if (!W || !H) return;
-      g = layout(W, H);
-      dpr = Math.min(window.devicePixelRatio || 1, g.mobile ? 1.5 : 2);
-      canvas.width = Math.round(W * dpr);
-      canvas.height = Math.round(H * dpr);
-      staticLayer.width = canvas.width;
-      staticLayer.height = canvas.height;
-      const sctx = staticLayer.getContext("2d")!;
-      sctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      drawStatic(sctx, g);
-      snow = makeSnow(g, 11);
-      trail = [];
-      caustics?.resize(W * 0.5, H * 0.55 * 0.5);
-      const card = cardRef.current;
-      if (card) {
-        card.style.left = `${g.card.left}px`;
-        card.style.top = `${g.card.top}px`;
-        card.style.width = `${g.card.width}px`;
-        g.card.h = card.offsetHeight || g.card.h;
-      }
-      if (!running) render(0);
-    };
-
-    const render = (dt: number) => {
-      const { W, H } = g;
-      const t = sceneT;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.drawImage(staticLayer, 0, 0, W, H);
-
-      // Light shafts
-      ctx.globalCompositeOperation = "lighter";
-      const shafts = g.mobile ? 3 : 5;
-      for (let i = 0; i < shafts; i++) {
-        const cx = W * (0.15 + i * (0.8 / shafts)) + Math.sin(t * 0.12 + i * 1.7) * 26;
-        const w = W * (0.035 + 0.02 * ((i * 7) % 3));
-        const len = H * (0.7 + 0.08 * (i % 2));
-        const gr = ctx.createLinearGradient(0, 0, 0, len);
-        const a = 0.05 + 0.02 * Math.sin(t * 0.3 + i);
-        gr.addColorStop(0, `rgba(170,225,245,${a})`);
-        gr.addColorStop(1, "rgba(170,225,245,0)");
-        ctx.fillStyle = gr;
-        ctx.beginPath();
-        ctx.moveTo(cx - w, 0);
-        ctx.lineTo(cx + w, 0);
-        ctx.lineTo(cx + w * 2.2 - len * 0.22, len);
-        ctx.lineTo(cx - w * 2.2 - len * 0.22, len);
-        ctx.closePath();
-        ctx.fill();
-      }
-
-      // Marine snow: far and mid layers behind the vehicle
-      const drawFlakes = (layer: number) => {
-        for (const f of snow) {
-          if (f.layer !== layer) continue;
-          if (dt) {
-            f.y += f.v * dt;
-            f.x += (Math.sin(t * 0.4 + f.ph) * 3 - 4 - layer * 2) * dt;
-            if (f.y > H + 10) {
-              f.y = -10;
-              f.x = Math.random() * W;
-            }
-            if (f.x < -20) f.x = W + 20;
-          }
-          // Fainter near the surface glare and in the deep haze
-          const depthFade = 0.55 + 0.45 * smooth(0, H * 0.3, f.y);
-          ctx.globalAlpha = f.a * depthFade;
-          ctx.drawImage(sprite, f.x - f.s / 2, f.y - f.s / 2, f.s, f.s);
+      const resize = () => {
+        const W = root.clientWidth;
+        const H = root.clientHeight;
+        if (!W || !H) return;
+        g = layout(W, H);
+        dpr = Math.min(window.devicePixelRatio || 1, g.mobile ? 1.5 : 2);
+        canvas.width = Math.round(W * dpr);
+        canvas.height = Math.round(H * dpr);
+        staticLayer.width = canvas.width;
+        staticLayer.height = canvas.height;
+        const sctx = staticLayer.getContext("2d")!;
+        sctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        drawStatic(sctx, g);
+        snow = makeSnow(g, 11);
+        trail = [];
+        caustics?.resize(W * 0.5, H * 0.55 * 0.5);
+        const card = cardRef.current;
+        if (card) {
+          card.style.left = `${g.card.left}px`;
+          card.style.top = `${g.card.top}px`;
+          card.style.width = `${g.card.width}px`;
+          g.card.h = card.offsetHeight || g.card.h;
         }
-        ctx.globalAlpha = 1;
+        if (!running) render(0);
       };
-      drawFlakes(0);
-      drawFlakes(1);
 
-      const v = vehicle(g, t);
-      const L = g.L;
-      const R = L * 0.075;
+      const render = (dt: number) => {
+        const { W, H } = g;
+        const t = sceneT;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.drawImage(staticLayer, 0, 0, W, H);
 
-      // Old scan returns fade on the bed
-      if (dt) trail = trail.filter((p) => t - p.t < 7 && t >= p.t);
-      for (const p of trail) {
-        const a = 1 - (t - p.t) / 7;
-        ctx.fillStyle = `rgba(34,211,238,${0.55 * a})`;
-        ctx.fillRect(p.x - 1, p.y - 1, 2, 2);
-      }
-
-      // Anomaly state
-      const span = exposedSpan(g);
-      const flagA = smooth(T_DETECT, T_DETECT + 0.4, t) * (1 - smooth(T_GONE - 1, T_GONE + 0.2, t));
-      const isDetecting = t > T_DETECT - 0.6 && t < T_DETECT + 1.2;
-
-      if (v.alpha > 0.01) {
-        // Lamp light pooled on the bed
-        const lx = v.x + L * 0.55;
-        const ly = seabed(g, lx);
-        const pool = ctx.createRadialGradient(lx, ly, 0, lx, ly, L * 0.9);
-        pool.addColorStop(0, `rgba(120,200,230,${0.16 * v.alpha})`);
-        pool.addColorStop(1, "rgba(120,200,230,0)");
-        ctx.fillStyle = pool;
-        ctx.beginPath();
-        ctx.ellipse(lx, ly, L * 0.9, L * 0.22, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Scan fan from the belly sensor down and forward to the bed
-        const ax = v.x + L * 0.27;
-        const ay = v.y + R * 0.8;
-        const b0 = v.x + L * 0.2;
-        const b1 = v.x + L * 1.05;
-        const col = isDetecting ? "245,181,68" : "34,211,238";
-        const fan = ctx.createLinearGradient(0, ay, 0, seabed(g, ax));
-        fan.addColorStop(0, `rgba(${col},${0.16 * v.alpha})`);
-        fan.addColorStop(1, `rgba(${col},${0.03 * v.alpha})`);
-        ctx.fillStyle = fan;
-        ctx.beginPath();
-        ctx.moveTo(ax, ay);
-        for (let x = b0; x <= b1; x += 4) ctx.lineTo(x, seabed(g, x));
-        ctx.closePath();
-        ctx.fill();
-
-        // Sweep line and its return on the bed
-        const s = (Math.sin(t * 3.1) + 1) / 2;
-        const hx = lerp(b0, b1, s);
-        const hy = seabed(g, hx);
-        ctx.strokeStyle = `rgba(${col},${0.7 * v.alpha})`;
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(ax, ay);
-        ctx.lineTo(hx, hy);
-        ctx.stroke();
-        ctx.fillStyle = `rgba(${col},${0.9 * v.alpha})`;
-        ctx.fillRect(hx - 1.5, hy - 1.5, 3, 3);
-        if (dt && t - lastTrail > 0.04 && v.alpha > 0.5) {
-          trail.push({ x: hx + (Math.random() - 0.5) * 2, y: hy - Math.random() * 1.5, t });
-          lastTrail = t;
-        }
-        if (t < lastTrail) lastTrail = t;
-      }
-
-      // Exposed span highlight, brackets, and marker
-      if (flagA > 0.01) {
-        ctx.save();
-        ctx.globalCompositeOperation = "source-over";
-        ctx.strokeStyle = `rgba(245,181,68,${0.9 * flagA})`;
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        for (let x = span[0]; x <= span[1]; x += 2) {
-          const y = cableY(g, x) - 2.5;
-          if (x === span[0]) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-        }
-        ctx.stroke();
-
-        // Corner brackets around the finding
-        const bx1 = span[0] - 8;
-        const bx2 = span[1] + 6;
-        const by1 = cableY(g, g.scourC) - 14;
-        const by2 = seabed(g, g.scourC) + 7;
-        const c = 6;
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(bx1, by1 + c); ctx.lineTo(bx1, by1); ctx.lineTo(bx1 + c, by1);
-        ctx.moveTo(bx2 - c, by1); ctx.lineTo(bx2, by1); ctx.lineTo(bx2, by1 + c);
-        ctx.moveTo(bx1, by2 - c); ctx.lineTo(bx1, by2); ctx.lineTo(bx1 + c, by2);
-        ctx.moveTo(bx2 - c, by2); ctx.lineTo(bx2, by2); ctx.lineTo(bx2, by2 - c);
-        ctx.stroke();
-
-        // Marker drops onto the finding
-        const mx = g.scourC;
-        const mBase = by1 - 2;
-        const grow = smooth(T_DETECT + 0.2, T_DETECT + 0.8, t);
-        const mTop = mBase - (g.mobile ? 34 : 46) * grow;
-        ctx.beginPath();
-        ctx.moveTo(mx, mBase);
-        ctx.lineTo(mx, mTop);
-        ctx.stroke();
-        if (grow > 0.95) {
-          ctx.fillStyle = `rgba(245,181,68,${flagA})`;
+        // Light shafts
+        ctx.globalCompositeOperation = "lighter";
+        const shafts = g.mobile ? 3 : 5;
+        for (let i = 0; i < shafts; i++) {
+          const cx = W * (0.15 + i * (0.8 / shafts)) + Math.sin(t * 0.12 + i * 1.7) * 26;
+          const w = W * (0.035 + 0.02 * ((i * 7) % 3));
+          const len = H * (0.7 + 0.08 * (i % 2));
+          const gr = ctx.createLinearGradient(0, 0, 0, len);
+          const a = 0.05 + 0.02 * Math.sin(t * 0.3 + i);
+          gr.addColorStop(0, `rgba(170,225,245,${a})`);
+          gr.addColorStop(1, "rgba(170,225,245,0)");
+          ctx.fillStyle = gr;
           ctx.beginPath();
-          ctx.moveTo(mx, mTop - 6);
-          ctx.lineTo(mx + 5, mTop);
-          ctx.lineTo(mx, mTop + 6);
-          ctx.lineTo(mx - 5, mTop);
+          ctx.moveTo(cx - w, 0);
+          ctx.lineTo(cx + w, 0);
+          ctx.lineTo(cx + w * 2.2 - len * 0.22, len);
+          ctx.lineTo(cx - w * 2.2 - len * 0.22, len);
           ctx.closePath();
           ctx.fill();
-          ctx.font = `500 10px ${monoFont}`;
-          ctx.textAlign = "right";
-          ctx.fillText("A-01", mx - 10, mTop + 3.5);
         }
-        // Pulse ring on the bed
-        const ph = ((t - T_DETECT) % 2) / 2;
-        ctx.strokeStyle = `rgba(245,181,68,${(1 - ph) * 0.6 * flagA})`;
-        ctx.beginPath();
-        ctx.ellipse(mx, seabed(g, mx), 6 + ph * 34, (6 + ph * 34) * 0.22, 0, 0, Math.PI * 2);
-        ctx.stroke();
 
-        // Leader line to the report card
-        const cardA = smooth(T_REPORT, T_REPORT + 0.5, t) * flagA;
-        if (cardA > 0.01 && grow > 0.95) {
-          const cx = clamp(mx, g.card.left + 14, g.card.left + g.card.width - 14);
-          const cy = g.card.top + g.card.h;
-          ctx.strokeStyle = `rgba(245,181,68,${0.45 * cardA})`;
-          ctx.setLineDash([3, 4]);
+        // Marine snow: far and mid layers behind the vehicle
+        const drawFlakes = (layer: number) => {
+          for (const f of snow) {
+            if (f.layer !== layer) continue;
+            if (dt) {
+              f.y += f.v * dt;
+              f.x += (Math.sin(t * 0.4 + f.ph) * 3 - 4 - layer * 2) * dt;
+              if (f.y > H + 10) {
+                f.y = -10;
+                f.x = Math.random() * W;
+              }
+              if (f.x < -20) f.x = W + 20;
+            }
+            // Fainter near the surface glare and in the deep haze
+            const depthFade = 0.55 + 0.45 * smooth(0, H * 0.3, f.y);
+            ctx.globalAlpha = f.a * depthFade;
+            ctx.drawImage(sprite, f.x - f.s / 2, f.y - f.s / 2, f.s, f.s);
+          }
+          ctx.globalAlpha = 1;
+        };
+        drawFlakes(0);
+        drawFlakes(1);
+
+        const v = vehicle(g, t);
+        const L = g.L;
+        const R = L * 0.075;
+
+        // Old scan returns fade on the bed
+        if (dt) trail = trail.filter((p) => t - p.t < 7 && t >= p.t);
+        for (const p of trail) {
+          const a = 1 - (t - p.t) / 7;
+          ctx.fillStyle = `rgba(34,211,238,${0.55 * a})`;
+          ctx.fillRect(p.x - 1, p.y - 1, 2, 2);
+        }
+
+        // Anomaly state
+        const span = exposedSpan(g);
+        const flagA = smooth(T_DETECT, T_DETECT + 0.4, t) * (1 - smooth(T_GONE - 1, T_GONE + 0.2, t));
+        const isDetecting = t > T_DETECT - 0.6 && t < T_DETECT + 1.2;
+
+        if (v.alpha > 0.01) {
+          // Lamp light pooled on the bed
+          const lx = v.x + L * 0.55;
+          const ly = seabed(g, lx);
+          const pool = ctx.createRadialGradient(lx, ly, 0, lx, ly, L * 0.9);
+          pool.addColorStop(0, `rgba(120,200,230,${0.16 * v.alpha})`);
+          pool.addColorStop(1, "rgba(120,200,230,0)");
+          ctx.fillStyle = pool;
           ctx.beginPath();
-          ctx.moveTo(mx, mTop - 7);
-          ctx.lineTo(cx, cy);
-          ctx.stroke();
-          ctx.setLineDash([]);
-        }
-        ctx.restore();
-      }
+          ctx.ellipse(lx, ly, L * 0.9, L * 0.22, 0, 0, Math.PI * 2);
+          ctx.fill();
 
-      // Vehicle, with a touch of haze
-      if (v.alpha > 0.01) {
-        // Forward lamp beam
+          // Scan fan from the belly sensor down and forward to the bed
+          const ax = v.x + L * 0.27;
+          const ay = v.y + R * 0.8;
+          const b0 = v.x + L * 0.2;
+          const b1 = v.x + L * 1.05;
+          const col = isDetecting ? "245,181,68" : "34,211,238";
+          const fan = ctx.createLinearGradient(0, ay, 0, seabed(g, ax));
+          fan.addColorStop(0, `rgba(${col},${0.16 * v.alpha})`);
+          fan.addColorStop(1, `rgba(${col},${0.03 * v.alpha})`);
+          ctx.fillStyle = fan;
+          ctx.beginPath();
+          ctx.moveTo(ax, ay);
+          for (let x = b0; x <= b1; x += 4) ctx.lineTo(x, seabed(g, x));
+          ctx.closePath();
+          ctx.fill();
+
+          // Sweep line and its return on the bed
+          const s = (Math.sin(t * 3.1) + 1) / 2;
+          const hx = lerp(b0, b1, s);
+          const hy = seabed(g, hx);
+          ctx.strokeStyle = `rgba(${col},${0.7 * v.alpha})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(ax, ay);
+          ctx.lineTo(hx, hy);
+          ctx.stroke();
+          ctx.fillStyle = `rgba(${col},${0.9 * v.alpha})`;
+          ctx.fillRect(hx - 1.5, hy - 1.5, 3, 3);
+          if (dt && t - lastTrail > 0.04 && v.alpha > 0.5) {
+            trail.push({ x: hx + (Math.random() - 0.5) * 2, y: hy - Math.random() * 1.5, t });
+            lastTrail = t;
+          }
+          if (t < lastTrail) lastTrail = t;
+        }
+
+        // Exposed span highlight, brackets, and marker
+        if (flagA > 0.01) {
+          ctx.save();
+          ctx.globalCompositeOperation = "source-over";
+          ctx.strokeStyle = `rgba(245,181,68,${0.9 * flagA})`;
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          for (let x = span[0]; x <= span[1]; x += 2) {
+            const y = cableY(g, x) - 2.5;
+            if (x === span[0]) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+
+          // Corner brackets around the finding
+          const bx1 = span[0] - 8;
+          const bx2 = span[1] + 6;
+          const by1 = cableY(g, g.scourC) - 14;
+          const by2 = seabed(g, g.scourC) + 7;
+          const c = 6;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(bx1, by1 + c); ctx.lineTo(bx1, by1); ctx.lineTo(bx1 + c, by1);
+          ctx.moveTo(bx2 - c, by1); ctx.lineTo(bx2, by1); ctx.lineTo(bx2, by1 + c);
+          ctx.moveTo(bx1, by2 - c); ctx.lineTo(bx1, by2); ctx.lineTo(bx1 + c, by2);
+          ctx.moveTo(bx2 - c, by2); ctx.lineTo(bx2, by2); ctx.lineTo(bx2, by2 - c);
+          ctx.stroke();
+
+          // Marker drops onto the finding
+          const mx = g.scourC;
+          const mBase = by1 - 2;
+          const grow = smooth(T_DETECT + 0.2, T_DETECT + 0.8, t);
+          const mTop = mBase - (g.mobile ? 34 : 46) * grow;
+          ctx.beginPath();
+          ctx.moveTo(mx, mBase);
+          ctx.lineTo(mx, mTop);
+          ctx.stroke();
+          if (grow > 0.95) {
+            ctx.fillStyle = `rgba(245,181,68,${flagA})`;
+            ctx.beginPath();
+            ctx.moveTo(mx, mTop - 6);
+            ctx.lineTo(mx + 5, mTop);
+            ctx.lineTo(mx, mTop + 6);
+            ctx.lineTo(mx - 5, mTop);
+            ctx.closePath();
+            ctx.fill();
+            ctx.font = `500 10px ${monoFont}`;
+            ctx.textAlign = "right";
+            ctx.fillText("A-01", mx - 10, mTop + 3.5);
+          }
+          // Pulse ring on the bed
+          const ph = ((t - T_DETECT) % 2) / 2;
+          ctx.strokeStyle = `rgba(245,181,68,${(1 - ph) * 0.6 * flagA})`;
+          ctx.beginPath();
+          ctx.ellipse(mx, seabed(g, mx), 6 + ph * 34, (6 + ph * 34) * 0.22, 0, 0, Math.PI * 2);
+          ctx.stroke();
+
+          // Leader line to the report card
+          const cardA = smooth(T_REPORT, T_REPORT + 0.5, t) * flagA;
+          if (cardA > 0.01 && grow > 0.95) {
+            const cx = clamp(mx, g.card.left + 14, g.card.left + g.card.width - 14);
+            const cy = g.card.top + g.card.h;
+            ctx.strokeStyle = `rgba(245,181,68,${0.45 * cardA})`;
+            ctx.setLineDash([3, 4]);
+            ctx.beginPath();
+            ctx.moveTo(mx, mTop - 7);
+            ctx.lineTo(cx, cy);
+            ctx.stroke();
+            ctx.setLineDash([]);
+          }
+          ctx.restore();
+        }
+
+        // Vehicle, with a touch of haze
+        if (v.alpha > 0.01) {
+          // Forward lamp beam
+          ctx.globalCompositeOperation = "lighter";
+          const lb = ctx.createLinearGradient(v.x + L * 0.5, 0, v.x + L * 1.6, 0);
+          lb.addColorStop(0, `rgba(170,225,245,${0.07 * v.alpha})`);
+          lb.addColorStop(1, "rgba(170,225,245,0)");
+          ctx.fillStyle = lb;
+          ctx.beginPath();
+          ctx.moveTo(v.x + L * 0.5, v.y - R * 0.3);
+          ctx.lineTo(v.x + L * 1.6, v.y - R * 2.5);
+          ctx.lineTo(v.x + L * 1.6, v.y + R * 4);
+          ctx.lineTo(v.x + L * 0.5, v.y + R * 0.3);
+          ctx.closePath();
+          ctx.fill();
+          ctx.globalCompositeOperation = "source-over";
+
+          ctx.save();
+          ctx.globalAlpha = v.alpha * 0.96;
+          ctx.translate(v.x, v.y);
+          ctx.rotate(v.pitch);
+          drawVehicle(ctx, L, t);
+          ctx.restore();
+        }
+
+        // Near marine snow, in front of everything
         ctx.globalCompositeOperation = "lighter";
-        const lb = ctx.createLinearGradient(v.x + L * 0.5, 0, v.x + L * 1.6, 0);
-        lb.addColorStop(0, `rgba(170,225,245,${0.07 * v.alpha})`);
-        lb.addColorStop(1, "rgba(170,225,245,0)");
-        ctx.fillStyle = lb;
-        ctx.beginPath();
-        ctx.moveTo(v.x + L * 0.5, v.y - R * 0.3);
-        ctx.lineTo(v.x + L * 1.6, v.y - R * 2.5);
-        ctx.lineTo(v.x + L * 1.6, v.y + R * 4);
-        ctx.lineTo(v.x + L * 0.5, v.y + R * 0.3);
-        ctx.closePath();
-        ctx.fill();
+        drawFlakes(2);
         ctx.globalCompositeOperation = "source-over";
 
-        ctx.save();
-        ctx.globalAlpha = v.alpha * 0.96;
-        ctx.translate(v.x, v.y);
-        ctx.rotate(v.pitch);
-        drawVehicle(ctx, L, t);
-        ctx.restore();
-      }
+        // Caustics
+        if (caustics && (dt || reduced || !running)) caustics.draw(t + 40);
 
-      // Near marine snow, in front of everything
-      ctx.globalCompositeOperation = "lighter";
-      drawFlakes(2);
-      ctx.globalCompositeOperation = "source-over";
-
-      // Caustics
-      if (caustics && (dt || reduced || !running)) caustics.draw(t + 40);
-
-      // Report card and HUD
-      const wantCard = t >= T_REPORT && t < T_GONE - 1;
-      if (wantCard !== cardOn && cardRef.current) {
-        cardOn = wantCard;
-        cardRef.current.classList.toggle("is-on", wantCard);
-      }
-      const hudTick = Math.floor(missionT * 10);
-      if (hudTick !== lastHud) {
-        lastHud = hudTick;
-        let mode = MODES[0][1];
-        for (const [at, m] of MODES) if (t >= at) mode = m;
-        if (modeRef.current && modeRef.current.textContent !== mode) modeRef.current.textContent = mode;
-        const depth = 41.6 - (seabed(g, v.x) - v.y) / (g.mobile ? 16 : 22) + Math.sin(t * 0.7) * 0.05;
-        if (depthRef.current) depthRef.current.textContent = depth.toFixed(1);
-        const hdg = Math.round(87 + Math.sin(t * 0.21) * 1.4 + Math.sin(t * 0.9) * 0.4);
-        if (hdgRef.current) hdgRef.current.textContent = String(hdg).padStart(3, "0");
-        const s = Math.floor(missionT);
-        const hh = String(Math.floor(s / 3600)).padStart(2, "0");
-        const mm = String(Math.floor((s % 3600) / 60)).padStart(2, "0");
-        const ss = String(s % 60).padStart(2, "0");
-        if (timeRef.current) timeRef.current.textContent = `${hh}:${mm}:${ss}`;
-      }
-    };
-
-    const frame = (now: number) => {
-      const dt = last ? Math.min(0.1, (now - last) / 1000) : 0.016;
-      last = now;
-      sceneT = (sceneT + dt) % LOOP;
-      missionT += dt;
-      render(dt);
-      raf = requestAnimationFrame(frame);
-    };
-
-    const start = () => {
-      if (running || reduced || !onscreen || document.hidden) return;
-      running = true;
-      last = 0;
-      raf = requestAnimationFrame(frame);
-    };
-    const stop = () => {
-      running = false;
-      cancelAnimationFrame(raf);
-    };
-
-    const ro = new ResizeObserver(() => resize());
-    ro.observe(root);
-    resize();
-    canvas.style.opacity = "1";
-
-    const io = new IntersectionObserver(([e]) => {
-      onscreen = e.isIntersecting;
-      if (onscreen) start();
-      else stop();
-    });
-    io.observe(root);
-    const onVis = () => (document.hidden ? stop() : start());
-    document.addEventListener("visibilitychange", onVis);
-    // Redraw once web fonts are in, so the canvas label uses the mono face
-    document.fonts?.ready.then(() => {
-      if (!running) render(0);
-    });
-
-    start();
-
-    // Dev-only: seek to a scene time for visual checks (stripped from production builds)
-    if (process.env.NODE_ENV !== "production") {
-      (window as unknown as { __heroSeek?: (t: number) => void }).__heroSeek = (t: number) => {
-        sceneT = t;
-        render(0);
+        // Report card and HUD
+        const wantCard = t >= T_REPORT && t < T_GONE - 1;
+        if (wantCard !== cardOn && cardRef.current) {
+          cardOn = wantCard;
+          cardRef.current.classList.toggle("is-on", wantCard);
+        }
+        const hudTick = Math.floor(missionT * 10);
+        if (hudTick !== lastHud) {
+          lastHud = hudTick;
+          let mode = MODES[0][1];
+          for (const [at, m] of MODES) if (t >= at) mode = m;
+          if (modeRef.current && modeRef.current.textContent !== mode) modeRef.current.textContent = mode;
+          const depth = 41.6 - (seabed(g, v.x) - v.y) / (g.mobile ? 16 : 22) + Math.sin(t * 0.7) * 0.05;
+          if (depthRef.current) depthRef.current.textContent = depth.toFixed(1);
+          const hdg = Math.round(87 + Math.sin(t * 0.21) * 1.4 + Math.sin(t * 0.9) * 0.4);
+          if (hdgRef.current) hdgRef.current.textContent = String(hdg).padStart(3, "0");
+          const s = Math.floor(missionT);
+          const hh = String(Math.floor(s / 3600)).padStart(2, "0");
+          const mm = String(Math.floor((s % 3600) / 60)).padStart(2, "0");
+          const ss = String(s % 60).padStart(2, "0");
+          if (timeRef.current) timeRef.current.textContent = `${hh}:${mm}:${ss}`;
+        }
       };
-    }
 
+      const frame = (now: number) => {
+        const dt = last ? Math.min(0.1, (now - last) / 1000) : 0.016;
+        last = now;
+        sceneT = (sceneT + dt) % LOOP;
+        missionT += dt;
+        render(dt);
+        raf = requestAnimationFrame(frame);
+      };
+
+      const start = () => {
+        if (running || reduced || !onscreen || document.hidden) return;
+        running = true;
+        last = 0;
+        raf = requestAnimationFrame(frame);
+      };
+      const stop = () => {
+        running = false;
+        cancelAnimationFrame(raf);
+      };
+
+      const ro = new ResizeObserver(() => resize());
+      ro.observe(root);
+      resize();
+      canvas.style.opacity = "1";
+
+      const io = new IntersectionObserver(([e]) => {
+        onscreen = e.isIntersecting;
+        if (onscreen) start();
+        else stop();
+      });
+      io.observe(root);
+      const onVis = () => (document.hidden ? stop() : start());
+      document.addEventListener("visibilitychange", onVis);
+      // Redraw once web fonts are in, so the canvas label uses the mono face
+      document.fonts?.ready.then(() => {
+        if (!running) render(0);
+      });
+
+      start();
+
+      return () => {
+        stop();
+        ro.disconnect();
+        io.disconnect();
+        document.removeEventListener("visibilitychange", onVis);
+        caustics?.dispose();
+      };
+    };
+
+    const boot = () => {
+      if (!cancelled) cleanup = init();
+    };
+    const w = window as Window & {
+      requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    const idleId = w.requestIdleCallback ? w.requestIdleCallback(boot, { timeout: 1500 }) : window.setTimeout(boot, 300);
     return () => {
-      stop();
-      ro.disconnect();
-      io.disconnect();
-      document.removeEventListener("visibilitychange", onVis);
-      caustics?.dispose();
+      cancelled = true;
+      if (w.cancelIdleCallback) w.cancelIdleCallback(idleId);
+      else window.clearTimeout(idleId);
+      cleanup?.();
     };
   }, []);
+
 
   return (
     <div ref={rootRef} className="absolute inset-0">

@@ -1,15 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
 import FadeIn from "@/components/FadeIn";
+
+/* The map library is only fetched when this section nears the viewport */
+const WorldMap = dynamic(() => import("@/components/WorldMap"), {
+  ssr: false,
+  loading: () => <div className="aspect-[4/3]" />,
+});
 import { ArrowIcon, Eyebrow, Section } from "@/components/ui";
 
-const GEO_URL = "/world-110m.json";
-
-interface UseCase {
+export interface UseCase {
   id: string;
   group: "wind" | "further";
   region: string;
@@ -148,7 +152,7 @@ function LocationButton({
         </span>
       </span>
       <span
-        className={`font-mono text-[10px] tracking-[0.1em] transition-colors ${
+        className={`font-mono text-[10px] tracking-[0.1em] whitespace-nowrap transition-colors ${
           active ? "text-cyan" : "text-muted/70 group-hover:text-foam"
         }`}
       >
@@ -161,9 +165,38 @@ function LocationButton({
 export default function ApplicationsMap() {
   const [activeId, setActiveId] = useState("north-sea");
   const active = USE_CASES.find((u) => u.id === activeId)!;
+  const [mapReady, setMapReady] = useState(false);
+  const sentinel = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  /* On stacked layouts the panel sits below the list, so bring it into view */
+  const selectFromList = (id: string) => {
+    setActiveId(id);
+    const panel = panelRef.current;
+    if (!panel || window.innerWidth >= 1024) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    panel.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+  };
+
+  useEffect(() => {
+    const el = sentinel.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          setMapReady(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "800px 0px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   return (
     <Section depth="140 m">
+      <div ref={sentinel} aria-hidden />
       <FadeIn>
         <Eyebrow index="03">Applications</Eyebrow>
       </FadeIn>
@@ -186,83 +219,11 @@ export default function ApplicationsMap() {
           {/* Map and location index */}
           <div className="bg-[#030f1f]">
             <div className="relative">
-              <ComposableMap
-                projection="geoNaturalEarth1"
-                projectionConfig={{ scale: 153, center: [10, 10] }}
-                style={{ width: "100%", height: "auto", display: "block" }}
-                aria-hidden
-              >
-                <Geographies geography={GEO_URL}>
-                  {({ geographies }) =>
-                    geographies.map((geo) => (
-                      <Geography
-                        key={geo.rsmKey}
-                        geography={geo}
-                        fill="#06182c"
-                        stroke="#12304d"
-                        strokeWidth={0.5}
-                        style={{
-                          default: { outline: "none" },
-                          hover: { outline: "none" },
-                          pressed: { outline: "none" },
-                        }}
-                      />
-                    ))
-                  }
-                </Geographies>
-
-                {USE_CASES.map((uc) => {
-                  const isActive = uc.id === activeId;
-                  const wind = uc.group === "wind";
-                  const color = wind ? "#22d3ee" : "#90e0ef";
-                  return (
-                    <Marker key={uc.id} coordinates={uc.coordinates}>
-                      <g onClick={() => setActiveId(uc.id)} style={{ cursor: "pointer" }}>
-                        {(wind || isActive) && (
-                          <circle r={8} fill="none" stroke={color} strokeWidth={1} className="map-ping" />
-                        )}
-                        <circle r={14} fill="transparent" />
-                        <g
-                          style={{
-                            transform: `scale(${isActive ? 1.45 : 1})`,
-                            transition: "transform 0.35s cubic-bezier(0.22,1,0.36,1)",
-                          }}
-                        >
-                          <circle
-                            r={wind ? 4.5 : 3.5}
-                            fill={isActive ? color : wind ? "#0a5d7a" : "#0a2a44"}
-                            stroke={color}
-                            strokeOpacity={wind || isActive ? 1 : 0.55}
-                            strokeWidth={1}
-                            style={{ transition: "fill 0.35s ease" }}
-                          />
-                        </g>
-                        <text
-                          textAnchor={uc.label === "left" ? "end" : uc.label === "right" ? "start" : "middle"}
-                          x={uc.label === "left" ? -11 : uc.label === "right" ? 11 : 0}
-                          y={uc.label === "top" ? -12 : 2.5}
-                          style={{
-                            fontSize: "7.5px",
-                            fill: isActive ? "#ffffff" : wind ? "rgba(144,224,239,0.85)" : "rgba(144,224,239,0.5)",
-                            fontWeight: isActive ? 700 : 500,
-                            letterSpacing: "0.12em",
-                            textTransform: "uppercase",
-                            fontFamily: "var(--font-jetbrains-mono), monospace",
-                            pointerEvents: "none",
-                            transition: "fill 0.35s ease",
-                            paintOrder: "stroke",
-                            stroke: "#030f1f",
-                            strokeWidth: "3px",
-                            strokeLinejoin: "round",
-                          }}
-                        >
-                          {uc.markerLabel}
-                        </text>
-                      </g>
-                    </Marker>
-                  );
-                })}
-              </ComposableMap>
+              {mapReady ? (
+                <WorldMap cases={USE_CASES} activeId={activeId} onSelect={setActiveId} />
+              ) : (
+                <div className="aspect-[4/3]" />
+              )}
             </div>
 
             <div className="grid sm:grid-cols-2 gap-8 border-t border-foam/12 p-6 lg:p-8">
@@ -270,7 +231,7 @@ export default function ApplicationsMap() {
                 <p className="label-mono !text-cyan mb-4">Offshore wind · Lead market</p>
                 <div className="flex flex-col gap-2">
                   {WIND.map((uc) => (
-                    <LocationButton key={uc.id} uc={uc} active={uc.id === activeId} onSelect={() => setActiveId(uc.id)} />
+                    <LocationButton key={uc.id} uc={uc} active={uc.id === activeId} onSelect={() => selectFromList(uc.id)} />
                   ))}
                 </div>
               </div>
@@ -278,7 +239,7 @@ export default function ApplicationsMap() {
                 <p className="label-mono mb-4">Further applications</p>
                 <div className="flex flex-col gap-2">
                   {FURTHER.map((uc) => (
-                    <LocationButton key={uc.id} uc={uc} active={uc.id === activeId} onSelect={() => setActiveId(uc.id)} />
+                    <LocationButton key={uc.id} uc={uc} active={uc.id === activeId} onSelect={() => selectFromList(uc.id)} />
                   ))}
                 </div>
               </div>
@@ -286,7 +247,7 @@ export default function ApplicationsMap() {
           </div>
 
           {/* Detail panel */}
-          <div className="bg-[#030f1f]" aria-live="polite">
+          <div ref={panelRef} className="bg-[#030f1f] scroll-mt-20" aria-live="polite">
             <div key={active.id} className="panel-in flex flex-col h-full">
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Image

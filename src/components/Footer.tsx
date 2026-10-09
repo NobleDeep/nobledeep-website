@@ -11,7 +11,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="flex flex-col gap-5">
             <Link href="/" className="flex items-center w-fit">
-              <Image src="/nd-logo-cutout.png" alt="Noble Deep home" width={745} height={467} className="h-11 w-auto" />
+              <Image src="/nd-logo-cutout.png" alt="Noble Deep home" width={70} height={44} className="h-11 w-auto" />
             </Link>
             <p className="text-sm text-body leading-relaxed max-w-[260px]">
               Autonomous subsea inspection.
