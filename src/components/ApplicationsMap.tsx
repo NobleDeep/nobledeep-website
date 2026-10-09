@@ -17,6 +17,8 @@ interface UseCase {
   markerLabel: string;
   coords: string;
   coordinates: [number, number];
+  /* Marker label placement, so nearby markers don't collide */
+  label: "top" | "left" | "right";
   description: string;
   points?: string[];
   photo: string;
@@ -34,6 +36,7 @@ const USE_CASES: UseCase[] = [
     markerLabel: "North Sea",
     coords: "56.0°N 3.0°E",
     coordinates: [3, 56],
+    label: "left",
     description:
       "The North Sea is Europe's largest offshore wind region, and much of each farm's risk sits on the seabed. Casper inspects these assets on a recurring schedule, so operators see burial depth and scour change between campaigns instead of discovering the damage after a fault.",
     points: [
@@ -53,6 +56,7 @@ const USE_CASES: UseCase[] = [
     markerLabel: "Baltic Sea",
     coords: "57.0°N 20.0°E",
     coordinates: [20, 57],
+    label: "right",
     description:
       "Offshore wind in the Baltic is growing quickly, and new farms connect to shore through long export cables that cross busy shipping lanes. Anchor drag and fishing gear add to the usual risk of cable exposure and foundation scour, so a current record of each cable route lets operators catch damage early and plan the repair.",
     points: [
@@ -72,6 +76,7 @@ const USE_CASES: UseCase[] = [
     markerLabel: "Gulf of Mexico",
     coords: "24.0°N 90.0°W",
     coordinates: [-90, 24],
+    label: "top",
     description:
       "Thousands of miles of pipeline cross the Gulf of Mexico seabed, and most are checked by periodic surveys. Recurring inspection for corrosion, exposure, and third-party damage on shallower lines is a future application for Casper.",
     photo: "/pipeline.jpeg",
@@ -86,6 +91,7 @@ const USE_CASES: UseCase[] = [
     markerLabel: "Pre-Salt Basin",
     coords: "23.0°S 40.0°W",
     coordinates: [-40, -23],
+    label: "top",
     description:
       "Pre-salt fields off Brazil sit in water far deeper than Casper's 300 m rating. Inspecting risers, wellheads, and the seabed around them is a future application that would need a deeper-rated vehicle.",
     photo: "/oil-rig.jpg",
@@ -102,6 +108,7 @@ const USE_CASES: UseCase[] = [
     markerLabel: "Barrier Reef",
     coords: "18.0°S 148.0°E",
     coordinates: [148, -18],
+    label: "top",
     description:
       "Reef ecosystems respond to small changes in temperature, sediment, and water quality. Repeated surveys of protected areas without surface disturbance are a future environmental monitoring application.",
     photo: "/coral-reef.jpg",
@@ -231,8 +238,9 @@ export default function ApplicationsMap() {
                           />
                         </g>
                         <text
-                          textAnchor="middle"
-                          y={-12}
+                          textAnchor={uc.label === "left" ? "end" : uc.label === "right" ? "start" : "middle"}
+                          x={uc.label === "left" ? -11 : uc.label === "right" ? 11 : 0}
+                          y={uc.label === "top" ? -12 : 2.5}
                           style={{
                             fontSize: "7.5px",
                             fill: isActive ? "#ffffff" : wind ? "rgba(144,224,239,0.85)" : "rgba(144,224,239,0.5)",

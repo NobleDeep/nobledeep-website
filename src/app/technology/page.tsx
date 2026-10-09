@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import CaptionedImage from "@/components/CaptionedImage";
+import DepthEnvelope from "@/components/DepthEnvelope";
 import FadeIn from "@/components/FadeIn";
 import { ArrowIcon, Eyebrow, Section } from "@/components/ui";
 import { pageMeta } from "@/lib/meta";
@@ -114,27 +115,33 @@ export default function TechnologyPage() {
     <>
       {/* ─── HERO ────────────────────────────────────────────────── */}
       <section className="px-6 lg:px-10 pt-24 lg:pt-32 pb-20 lg:pb-28">
-        <div className="mx-auto max-w-7xl">
-          <FadeIn>
-            <Eyebrow>Technology</Eyebrow>
-          </FadeIn>
-          <FadeIn delay={80}>
-            <h1 className="mt-10 text-5xl sm:text-6xl lg:text-7xl xl:text-[5.25rem] font-bold leading-[1.0] tracking-[-0.03em] text-white max-w-5xl">
-              Casper: a new way to monitor subsea infrastructure.
-            </h1>
-          </FadeIn>
-          <FadeIn delay={160}>
-            <p className="mt-10 text-lg lg:text-xl text-body max-w-2xl leading-relaxed">
-              Casper is an autonomous underwater vehicle that inspects subsea
-              infrastructure on a recurring schedule and reports the findings
-              that matter. Operators get continuous coverage of their cables and
-              foundations without waiting for the next survey vessel.
-            </p>
-          </FadeIn>
+        <div className="mx-auto max-w-7xl grid lg:grid-cols-[1.45fr_1fr] gap-14 lg:gap-20 items-center">
+          <div>
+            <div className="animate-hero animate-hero-1">
+              <Eyebrow>Technology</Eyebrow>
+            </div>
+            <div className="animate-hero animate-hero-2">
+              <h1 className="mt-10 text-5xl sm:text-6xl lg:text-[4.25rem] xl:text-[4.75rem] font-bold leading-[1.0] tracking-[-0.03em] text-white max-w-4xl">
+                Casper: a new way to monitor subsea infrastructure.
+              </h1>
+            </div>
+            <div className="animate-hero animate-hero-3">
+              <p className="mt-10 text-lg lg:text-xl text-body max-w-2xl leading-relaxed">
+                Casper is an autonomous underwater vehicle that inspects subsea
+                infrastructure on a recurring schedule and reports the findings
+                that matter. Operators get continuous coverage of their cables and
+                foundations without waiting for the next survey vessel.
+              </p>
+            </div>
+          </div>
+
+          <div className="animate-hero animate-hero-4 w-full max-w-md lg:max-w-none mx-auto">
+            <DepthEnvelope />
+          </div>
 
           {/* Status */}
-          <FadeIn delay={240}>
-            <div className="mt-14 grid sm:grid-cols-[auto_1fr] border border-foam/15 bg-white/[0.03] max-w-4xl">
+          <div className="animate-hero animate-hero-5 lg:col-span-2">
+            <div className="grid sm:grid-cols-[auto_1fr] border border-foam/15 bg-white/[0.03]">
               <div className="flex sm:flex-col justify-between sm:justify-center gap-2 px-6 py-5 sm:px-8 border-b sm:border-b-0 sm:border-r border-foam/15">
                 <p className="label-mono !text-cyan">Status</p>
                 <p className="text-3xl font-bold tracking-tight text-white">TRL 4</p>
@@ -145,7 +152,7 @@ export default function TechnologyPage() {
                 Casper Rev.1, our first integrated vehicle, is in build.
               </p>
             </div>
-          </FadeIn>
+          </div>
         </div>
       </section>
 

@@ -71,8 +71,8 @@ export async function renderSocialImage() {
           <path d="M 0 540 Q 300 528 600 540 T 1200 536" stroke="#96d7f0" strokeOpacity="0.25" fill="none" />
           <path d="M 0 546 Q 300 534 600 546 T 880 548" stroke="#22d3ee" strokeOpacity="0.4" strokeDasharray="6 7" fill="none" />
           <path d="M 880 548 Q 925 552 945 528" stroke="#f5b544" strokeWidth="2.5" fill="none" />
-          <path d="M 742 430 L 700 538 L 860 538 Z" fill="#22d3ee" fillOpacity="0.12" />
-          <g transform="translate(700 420)">
+          <path d="M 768 488 L 740 538 L 890 538 Z" fill="#22d3ee" fillOpacity="0.14" />
+          <g transform="translate(735 478)">
             <path d="M -88 -6 L -72 -26 L -60 -26 L -54 -10 Z" fill="#1d3447" />
             <path d="M -88 6 L -72 26 L -60 26 L -54 10 Z" fill="#132635" />
             <path d="M -66 -11 L 66 -11 C 84 -11 92 -6 92 0 C 92 6 84 11 66 11 L -66 11 L -92 4 L -92 -4 Z" fill="url(#hull)" />

@@ -15,6 +15,8 @@ export const metadata: Metadata = {
   ),
   title: { absolute: "Noble Deep | Continuous Subsea Inspection" },
 };
+metadata.openGraph = { ...metadata.openGraph, title: "Noble Deep | Continuous Subsea Inspection" };
+metadata.twitter = { ...metadata.twitter, title: "Noble Deep | Continuous Subsea Inspection" };
 
 const capabilities = [
   {
@@ -56,7 +58,7 @@ export default function HomePage() {
       {/* ─── HERO ─────────────────────────────────────────────────
           Pulled up under the sticky header so the scene runs to the
           top edge with no band above it. */}
-      <section className="relative -mt-16 min-h-[100svh] overflow-hidden flex flex-col">
+      <section className="relative -mt-16 min-h-[100svh] md:h-[100svh] md:min-h-[780px] overflow-hidden flex flex-col">
         <HeroScene />
 
         {/* Readability scrim behind the copy */}
@@ -71,25 +73,25 @@ export default function HomePage() {
           style={{ background: "linear-gradient(90deg, rgba(3,16,32,0.72) 0%, rgba(3,16,32,0.4) 38%, transparent 62%)" }}
         />
 
-        <div className="relative z-10 flex-1 flex flex-col px-6 lg:px-10 pt-32 md:pt-36 md:pb-[20vh] md:justify-center">
+        <div className="relative z-10 flex-1 flex flex-col px-6 lg:px-10 pt-28 md:pt-24 md:pb-10 md:justify-center">
           <div className="mx-auto w-full max-w-7xl">
-            <p className="animate-hero animate-hero-1 label-mono !text-foam mb-8">
+            <p className="animate-hero animate-hero-1 label-mono !text-foam mb-7">
               Noble Deep&nbsp;&nbsp;·&nbsp;&nbsp;Casper AUV
             </p>
 
-            <h1 className="animate-hero animate-hero-2 text-[2.6rem] sm:text-6xl lg:text-[4rem] xl:text-[4.6rem] font-bold leading-[1.02] tracking-[-0.025em] text-white max-w-[36rem] xl:max-w-[44rem]">
+            <h1 className="animate-hero animate-hero-2 text-[2.3rem] sm:text-6xl lg:text-[3.5rem] xl:text-[4rem] font-bold leading-[1.03] tracking-[-0.025em] text-white max-w-[34rem] xl:max-w-[40rem]">
               Subsea inspection campaigns cost operators about{" "}
               <span className="text-foam">$150K</span> per vessel day.
             </h1>
 
-            <p className="animate-hero animate-hero-3 mt-7 text-lg lg:text-xl text-body max-w-xl leading-relaxed">
+            <p className="animate-hero animate-hero-3 mt-6 text-base sm:text-lg text-body max-w-[34rem] leading-relaxed">
               Casper is an autonomous underwater vehicle that stays on site and
               inspects subsea infrastructure continuously, without relying on
               chartered survey vessels. Operators get condition reports that
               catch damage early, so repairs are planned instead of rushed.
             </p>
 
-            <div className="animate-hero animate-hero-4 mt-10 flex flex-wrap gap-3">
+            <div className="animate-hero animate-hero-4 mt-9 flex flex-wrap gap-3">
               <Link href="/contact" className="btn-primary">
                 Get in Touch
                 <ArrowIcon />
@@ -99,7 +101,7 @@ export default function HomePage() {
               </Link>
             </div>
 
-            <div className="animate-hero animate-hero-5 mt-10 flex flex-wrap gap-3">
+            <div className="animate-hero animate-hero-5 mt-8 flex flex-wrap gap-3">
               <Badge title="Draper University" detail="Alumni Company" />
               <Badge title="Finalist" detail="Ocean Exchange 2026 Collegiate Awards" />
             </div>
@@ -107,7 +109,7 @@ export default function HomePage() {
         </div>
 
         {/* Mobile: reserve the lower part of the hero for the scene */}
-        <div aria-hidden className="h-[46svh] shrink-0 md:hidden" />
+        <div aria-hidden className="h-[400px] shrink-0 md:hidden" />
 
         <p className="sr-only">
           Illustration: an autonomous underwater vehicle follows an export

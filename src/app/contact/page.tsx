@@ -16,14 +16,14 @@ export default function ContactPage() {
       {/* ─── HEADER ──────────────────────────────────────────────── */}
       <section className="px-6 lg:px-10 pt-24 lg:pt-32 pb-20 lg:pb-24">
         <div className="mx-auto max-w-7xl">
-          <FadeIn>
+          <div className="animate-hero animate-hero-1">
             <Eyebrow>Contact</Eyebrow>
-          </FadeIn>
-          <FadeIn delay={80}>
+          </div>
+          <div className="animate-hero animate-hero-2">
             <h1 className="mt-10 text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.0] tracking-[-0.03em] text-white max-w-4xl">
               Let&apos;s talk about your monitoring challenge.
             </h1>
-          </FadeIn>
+          </div>
         </div>
       </section>
 

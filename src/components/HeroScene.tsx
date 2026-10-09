@@ -77,20 +77,22 @@ type Geo = {
   xA: number;
   xB: number;
   xEnd: number;
-  card: { left: number; top: number; width: number };
+  card: { left: number; top: number; width: number; h: number };
 };
 
 function layout(W: number, H: number): Geo {
   const mobile = W < 768;
-  const seabed0 = mobile ? H - 96 : H * 0.84;
+  const seabed0 = mobile ? H - 92 : H * 0.84;
   const pileX = mobile ? W * 0.8 : W * 0.775;
   const pileW = mobile ? 20 : clamp(W * 0.022, 24, 34);
   const scourW = mobile ? 30 : clamp(W * 0.034, 34, 60);
   const scourC = pileX - pileW / 2 - scourW * 0.9;
   const scourD = mobile ? 11 : clamp(H * 0.022, 14, 22);
-  const L = mobile ? 78 : clamp(W * 0.075, 96, 150);
+  const L = mobile ? 84 : clamp(W * 0.08, 100, 160);
   const cruiseY = seabed0 - (mobile ? 48 : clamp(H * 0.075, 52, 80));
-  const cardW = mobile ? Math.min(300, W - 32) : 288;
+  const cardW = mobile ? Math.min(320, W - 32) : 318;
+  // Wide screens: card sits left of the pile, clear of the copy. Otherwise it sits at the right edge.
+  const leftOfPile = pileX - pileW / 2 - 36 - cardW;
   return {
     W,
     H,
@@ -103,13 +105,15 @@ function layout(W: number, H: number): Geo {
     scourD,
     L,
     cruiseY,
-    x0: mobile ? -L * 0.6 : W * 0.4,
+    x0: mobile ? -L * 0.6 : W * 0.5,
     xA: scourC - L * 1.05,
     xB: scourC - L * 0.55,
     xEnd: mobile ? W + L : W * 0.985,
     card: mobile
-      ? { left: 16, top: seabed0 - 262, width: cardW }
-      : { left: W - cardW - Math.max(64, W * 0.045), top: H * 0.36, width: cardW },
+      ? { left: 16, top: seabed0 - 255, width: cardW, h: 150 }
+      : W >= 1280 && leftOfPile > W * 0.5
+        ? { left: leftOfPile, top: H * 0.53, width: cardW, h: 150 }
+        : { left: W - cardW - Math.max(64, W * 0.045), top: H * 0.36, width: cardW, h: 150 },
   };
 }
 
@@ -612,6 +616,7 @@ export default function HeroScene() {
         card.style.left = `${g.card.left}px`;
         card.style.top = `${g.card.top}px`;
         card.style.width = `${g.card.width}px`;
+        g.card.h = card.offsetHeight || g.card.h;
       }
       if (!running) render(0);
     };
@@ -790,8 +795,8 @@ export default function HeroScene() {
         // Leader line to the report card
         const cardA = smooth(T_REPORT, T_REPORT + 0.5, t) * flagA;
         if (cardA > 0.01 && grow > 0.95) {
-          const cx = g.mobile ? g.card.left + 40 : g.card.left;
-          const cy = g.mobile ? g.card.top + 150 : g.card.top + 160;
+          const cx = clamp(mx, g.card.left + 14, g.card.left + g.card.width - 14);
+          const cy = g.card.top + g.card.h;
           ctx.strokeStyle = `rgba(245,181,68,${0.45 * cardA})`;
           ctx.setLineDash([3, 4]);
           ctx.beginPath();
@@ -900,6 +905,14 @@ export default function HeroScene() {
 
     start();
 
+    // Dev-only: seek to a scene time for visual checks (stripped from production builds)
+    if (process.env.NODE_ENV !== "production") {
+      (window as unknown as { __heroSeek?: (t: number) => void }).__heroSeek = (t: number) => {
+        sceneT = t;
+        render(0);
+      };
+    }
+
     return () => {
       stop();
       ro.disconnect();
@@ -973,7 +986,7 @@ export default function HeroScene() {
             ["Finding", "Cable exposure, 2.8 m span"],
             ["Severity", "Medium · plan repair"],
           ].map(([k, val]) => (
-            <div key={k} className="report-row grid grid-cols-[5.2rem_1fr] gap-2">
+            <div key={k} className="report-row grid grid-cols-[4.9rem_1fr] gap-2">
               <dt className="uppercase tracking-[0.14em] text-foam/55">{k}</dt>
               <dd className={k === "Severity" ? "text-amber" : "text-white/90"}>{val}</dd>
             </div>

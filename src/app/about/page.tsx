@@ -42,23 +42,23 @@ export default function AboutPage() {
       <section className="px-6 lg:px-10 pt-24 lg:pt-32 pb-20 lg:pb-28">
         <div className="mx-auto max-w-7xl grid lg:grid-cols-[1.4fr_1fr] gap-14 lg:gap-20 items-center">
           <div>
-            <FadeIn>
+            <div className="animate-hero animate-hero-1">
               <Eyebrow>About</Eyebrow>
-            </FadeIn>
-            <FadeIn delay={80}>
+            </div>
+            <div className="animate-hero animate-hero-2">
               <h1 className="mt-10 text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.0] tracking-[-0.03em] text-white max-w-3xl">
                 We&apos;re here because infrastructure can&apos;t wait.
               </h1>
-            </FadeIn>
-            <FadeIn delay={160}>
+            </div>
+            <div className="animate-hero animate-hero-3">
               <p className="mt-10 text-lg lg:text-xl text-body max-w-xl leading-relaxed">
                 Noble Deep was founded on a single conviction: the monitoring gap
                 in subsea infrastructure is a solvable engineering problem, and
                 solving it protects lives, assets, and the environment.
               </p>
-            </FadeIn>
+            </div>
           </div>
-          <FadeIn delay={240}>
+          <div className="animate-hero animate-hero-4">
             <CaptionedImage
               src="/images/founder-pitch.jpg"
               alt="Andrew Jimenez presenting Noble Deep"
@@ -68,7 +68,7 @@ export default function AboutPage() {
               preload
               className="max-w-md mx-auto lg:mx-0"
             />
-          </FadeIn>
+          </div>
         </div>
       </section>
 
