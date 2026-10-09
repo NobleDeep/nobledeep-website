@@ -9,6 +9,7 @@ interface FormValues {
   company: string;
   role: string;
   message: string;
+  website: string; // honeypot, hidden from people
 }
 
 const inputClass =
@@ -21,6 +22,7 @@ const errorClass = "mt-2 text-xs text-amber";
 export default function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [sendError, setSendError] = useState(false);
 
   const {
     register,
@@ -31,21 +33,32 @@ export default function ContactForm() {
 
   const onSubmit = async (data: FormValues) => {
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 800));
-    console.log("Form submission:", data);
-    setSubmitting(false);
-    setSubmitted(true);
-    reset();
+    setSendError(false);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      setSubmitted(true);
+      reset();
+    } catch {
+      // Keep what they typed so nothing is lost; point them to direct email
+      setSendError(true);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (submitted) {
     return (
       <div className="py-16">
         <p className="label-mono !text-cyan mb-4">
-          Transmission received.
+          Message sent.
         </p>
         <p className="text-body text-lg max-w-sm leading-relaxed">
-          We&apos;ll be in touch. You can also reach us at{" "}
+          Thanks for reaching out. We&apos;ll reply by email. You can also reach us at{" "}
           <a href="mailto:andrew@nobledeepsea.com" className="text-white underline decoration-foam/40 underline-offset-4 hover:text-cyan transition-colors">
             andrew@nobledeepsea.com
           </a>
@@ -62,7 +75,7 @@ export default function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-8">
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="relative flex flex-col gap-8">
       <div className="grid sm:grid-cols-2 gap-8">
         <div>
           <label htmlFor="cf-name" className={labelClass}>Name *</label>
@@ -116,6 +129,12 @@ export default function ContactForm() {
         {errors.message && <p className={errorClass}>Please include a message.</p>}
       </div>
 
+      {/* Honeypot: off-screen and skipped by keyboard and screen readers */}
+      <div aria-hidden className="absolute -left-[9999px] h-px w-px overflow-hidden">
+        <label htmlFor="cf-website">Website</label>
+        <input id="cf-website" tabIndex={-1} autoComplete="off" {...register("website")} />
+      </div>
+
       <div>
         <button
           type="submit"
@@ -129,6 +148,15 @@ export default function ContactForm() {
             </svg>
           )}
         </button>
+        {sendError && (
+          <p role="alert" className="mt-5 text-sm text-amber leading-relaxed max-w-md">
+            Your message couldn&apos;t be sent. Please try again, or email us directly at{" "}
+            <a href="mailto:andrew@nobledeepsea.com" className="underline underline-offset-4 hover:text-white">
+              andrew@nobledeepsea.com
+            </a>
+            .
+          </p>
+        )}
       </div>
     </form>
   );
